@@ -1,0 +1,16 @@
+{
+  "name": "nishen/booker",
+  "description": "booking application",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Nishen Naidoo",
+      "email": "nish.naidoo@gmail.com"
+    }
+  ],
+
+  "require": {
+    "guzzlehttp/guzzle": "6.0.1"
+  }
+}
