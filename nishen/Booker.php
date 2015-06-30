@@ -9,6 +9,7 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use DateTime;
+use DateTimeZone;
 use GuzzleHttp\Client;
 
 class Booker
@@ -116,8 +117,48 @@ class Booker
             'allow_redirects' => false
         ]);
 
-        preg_match_all('|<a href="/customer/mobile.facility/book_dialog/(\d+)/(\d+)" data-rel="dialog">(.{7})</a>|', $res->getBody(), $out, PREG_SET_ORDER);
-
-        return $out;
+        return $res->getBody();
     }
+
+    public function extractAvailabilityData($doc)
+    {
+        $result = preg_match_all('|<a href="/customer/mobile/facility/book_dialog/(\d+)/(\d+)" data-rel="dialog">(.{7})</a>|', $doc, $data, PREG_SET_ORDER);
+
+        return $result > 0? $data : null;
+    }
+
+    public function findSlot($data, $startTime, $slots = 4)
+    {
+        $courts = array();
+        foreach ($data as $item)
+        {
+            $courts[$item[2]]['timeu'][] = $item[1];
+            $courts[$item[2]]['times'][] = $item[3];
+        }
+
+        $startTime = '05:00pm';
+        $date = new DateTime($startTime, new DateTimeZone("Australia/NSW"));
+
+        $timeSlotsRequired = array();
+        for ($x = 0; $x < $slots; $x++)
+        {
+            $timeSlotsRequired[] = $date->format("h:ia");
+            $date->modify('+30 MINUTES');
+        }
+
+        $result = null;
+        foreach ($courts as $id => $court)
+        {
+            $intersect = array_intersect($court['times'], $timeSlotsRequired);
+            if (count($intersect) == count($timeSlotsRequired))
+            {
+                reset($intersect);
+                $result = array('court' => $id, 'time' => $court['timeu'][key($intersect)], 'slots' => $slots);
+                echo "Eureka! $id\n";
+                break;
+            }
+        }
+
+        print_r($result);
+   }
 }

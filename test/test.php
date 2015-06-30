@@ -12,8 +12,12 @@ use \nishen\Booker;
 
 $booker = new Booker('', '');
 
-$doc = '';
-$booker->parseAvailability($doc);
+$doc = file_get_contents('availability-sample.html');
+$data = $booker->extractAvailabilityData($doc);
+
+$booker->findSlot($data, '05:00pm', 4);
+
+//print_r($data);
 
 /*
 [8] => Array
@@ -23,5 +27,4 @@ $booker->parseAvailability($doc);
     [2] => 4591
     [3] => 09:30am
 )
-
 */
