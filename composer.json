@@ -11,6 +11,8 @@
   ],
 
   "require": {
-    "guzzlehttp/guzzle": "6.0.1"
+    "guzzlehttp/guzzle": "6.0.1",
+    "katzgrau/klogger": "dev-master",
+    "phpunit/phpunit": "4.7.6"
   }
 }

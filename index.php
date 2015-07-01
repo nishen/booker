@@ -6,24 +6,16 @@
  * Time: 7:00 PM
  */
 
-require_once 'nishen/Booker.php';
+require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/nishen/Booker.php';
 
 use \nishen\Booker;
 
 $booker = new Booker('nishen.naidoo@mq.edu.au', 'ishmael8');
 
-$booker->viewLogin();
-
-echo "\n------------------------------------------\n";
-
+$booker->getLoginPage();
 $location = $booker->login();
 if (strpos($location, 'dashboard') === false)
     exit;
-
-echo "\n------------------------------------------\n";
-
 $booker->dashboard();
-
-echo "\n------------------------------------------\n";
-
 $booker->getFacilityAvailability();

@@ -15,7 +15,7 @@ $booker = new Booker('', '');
 $doc = file_get_contents('availability-sample.html');
 $data = $booker->extractAvailabilityData($doc);
 
-$booker->findSlot($data, '05:00pm', 4);
+$booker->findSlot($data, '03:00pm', 4);
 
 //print_r($data);
 

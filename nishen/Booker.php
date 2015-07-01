@@ -11,9 +11,13 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use DateTime;
 use DateTimeZone;
 use GuzzleHttp\Client;
+use Katzgrau\KLogger\Logger;
+use Psr\Log\LogLevel;
 
 class Booker
 {
+    private $log;
+
     private $username;
 
     private $password;
@@ -22,6 +26,9 @@ class Booker
 
     function __construct($username, $password)
     {
+        $this->log = new Logger(__DIR__ . '/log', LogLevel::DEBUG);
+        $this->log->debug("instantiated class...");
+
         $this->username = $username;
         $this->password = $password;
 
@@ -30,7 +37,7 @@ class Booker
             'timeout' => 120.0,
             'cookies' => true,
             'verify' => false,
-            'proxy' => 'tcp://localhost:8888',
+            //'proxy' => 'tcp://localhost:8888',
             'headers' => [
                 'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
                 'Accept-Encoding' => 'gzip, deflate',
@@ -43,14 +50,17 @@ class Booker
         ]);
     }
 
-    public function viewLogin()
+    public function getLoginPage()
     {
         $res = $this->client->get('login?site=382');
-        echo $res->getBody();
+
+        return $res->getBody();
     }
 
     public function login()
     {
+        $result = null;
+
         $res = $this->client->post('login', [
             'form_params' => [
                 'username' => $this->username,
@@ -65,10 +75,6 @@ class Booker
             'allow_redirects' => false
         ]);
 
-        print_r($res->getHeaders());
-
-        echo $res->getBody();
-
         switch ($res->getStatusCode())
         {
             case 301:
@@ -76,15 +82,17 @@ class Booker
             case 303:
             case 307:
             case 308:
-                return $res->getHeader("Location");
+                $result = $res->getHeader("Location");
                 break;
         }
 
-        return null;
+        return $result;
     }
 
     public function dashboard()
     {
+        $result = null;
+
         $res = $this->client->post('dashboard', [
             'headers' => [
                 'Accept-Encoding' => 'gzip, deflate, sdch',
@@ -93,11 +101,15 @@ class Booker
             'allow_redirects' => false
         ]);
 
-        echo $res->getBody();
+        $result = $res->getBody();
+
+        return $result;
     }
 
     public function getFacilityAvailability($resource = '753', $date = null)
     {
+        $result = null;
+
         if ($date == null)
         {
             $date = new DateTime();
@@ -117,18 +129,22 @@ class Booker
             'allow_redirects' => false
         ]);
 
-        return $res->getBody();
+        $result = $this->extractAvailabilityData($res->getBody());
+
+        return $result;
     }
 
     public function extractAvailabilityData($doc)
     {
         $result = preg_match_all('|<a href="/customer/mobile/facility/book_dialog/(\d+)/(\d+)" data-rel="dialog">(.{7})</a>|', $doc, $data, PREG_SET_ORDER);
 
-        return $result > 0? $data : null;
+        return $result > 0 ? $data : null;
     }
 
     public function findSlot($data, $startTime, $slots = 4)
     {
+        $result = null;
+
         $courts = array();
         foreach ($data as $item)
         {
@@ -136,7 +152,7 @@ class Booker
             $courts[$item[2]]['times'][] = $item[3];
         }
 
-        $startTime = '05:00pm';
+        //$startTime = '05:00pm';
         $date = new DateTime($startTime, new DateTimeZone("Australia/NSW"));
 
         $timeSlotsRequired = array();
@@ -146,7 +162,6 @@ class Booker
             $date->modify('+30 MINUTES');
         }
 
-        $result = null;
         foreach ($courts as $id => $court)
         {
             $intersect = array_intersect($court['times'], $timeSlotsRequired);
@@ -159,6 +174,8 @@ class Booker
             }
         }
 
-        print_r($result);
-   }
+        $this->log->debug("results: ", $result);
+
+        return $result;
+    }
 }
