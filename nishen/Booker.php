@@ -8,11 +8,11 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use DateTime;
-use DateTimeZone;
-use GuzzleHttp\Client;
-use Katzgrau\KLogger\Logger;
-use Psr\Log\LogLevel;
+use \DateTime;
+use \DateTimeZone;
+use \GuzzleHttp\Client;
+use \Katzgrau\KLogger\Logger;
+use \Psr\Log\LogLevel;
 
 class Booker
 {
@@ -26,7 +26,7 @@ class Booker
 
     function __construct($username, $password)
     {
-        $this->log = new Logger(__DIR__ . '/log', LogLevel::DEBUG);
+        $this->log = new Logger(__DIR__ . '/../log', LogLevel::DEBUG);
         $this->log->debug("instantiated class...");
 
         $this->username = $username;
@@ -114,7 +114,6 @@ class Booker
         {
             $date = new DateTime();
             $date->modify('+2 days');
-            echo $date->format('Y-m-d');
         }
 
         $endpoint = 'facility/browse/' . $resource . '/' . $date->format('Y-m-d');
@@ -169,7 +168,6 @@ class Booker
             {
                 reset($intersect);
                 $result = array('court' => $id, 'time' => $court['timeu'][key($intersect)], 'slots' => $slots);
-                echo "Eureka! $id\n";
                 break;
             }
         }

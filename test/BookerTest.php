@@ -11,13 +11,18 @@ require_once __DIR__ . '/../nishen/Booker.php';
 
 use \nishen\Booker;
 use \PHPUnit_Framework_TestCase;
+use \Katzgrau\KLogger\Logger;
 
 class BookerTest extends PHPUnit_Framework_TestCase
 {
+    private $log;
+
     protected $booker;
 
     protected function setUp()
     {
+        $this->log = new Logger(__DIR__ . '/../log');
+        $this->log->debug("new class...");
         $this->booker = new Booker('', '');
     }
 
