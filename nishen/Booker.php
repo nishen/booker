@@ -77,12 +77,16 @@ class Booker
 
         switch ($res->getStatusCode())
         {
+            case 200:
+                $result = null;
+                break;
+
             case 301:
             case 302:
             case 303:
             case 307:
             case 308:
-                $result = $res->getHeader("Location");
+            $result = $res->getHeader("Location")[0];
                 break;
         }
 
@@ -106,7 +110,7 @@ class Booker
         return $result;
     }
 
-    public function getFacilityAvailability($resource = '753', $date = null)
+    public function getFacilityAvailability($date = null, $resource = '753')
     {
         $result = null;
 
@@ -142,8 +146,6 @@ class Booker
 
     public function findSlot($data, $startTime, $slots = 4)
     {
-        $result = null;
-
         $courts = array();
         foreach ($data as $item)
         {
@@ -168,12 +170,14 @@ class Booker
             {
                 reset($intersect);
                 $result = array('court' => $id, 'time' => $court['timeu'][key($intersect)], 'slots' => $slots);
-                break;
+                $this->log->debug("results: ", $result);
+
+                return $result;
             }
         }
 
-        $this->log->debug("results: ", $result);
+        $this->log->debug("no slot found: " . $startTime);
 
-        return $result;
+        return null;
     }
 }
