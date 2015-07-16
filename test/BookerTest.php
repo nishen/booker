@@ -7,32 +7,38 @@
  * Time: 12:30 AM
  */
 
-require_once __DIR__ . '/../nishen/Booker.php';
+require_once __DIR__ . '/../app/config.php';
 
-use \nishen\Booker;
 use \PHPUnit_Framework_TestCase;
-use \Katzgrau\KLogger\Logger;
+use \nishen\Booker;
 
 class BookerTest extends PHPUnit_Framework_TestCase
 {
-    private $log;
+    private static $log;
 
-    protected $booker;
+    private static $booker;
 
-    protected function setUp()
+    private static $data;
+
+
+    public static function setUpBeforeClass()
     {
-        $this->log = new Logger(__DIR__ . '/../log');
-        $this->log->debug("new class...");
-        $this->booker = new Booker('', '');
+        global $log;
+
+        self::$log = $log;
+
+        self::$log->debug("starting test: " . date("Y-m-d H:i:s"));
+
+        self::$data = file_get_contents('data/availability-sample.html');
+        self::$booker = new Booker('', '');
     }
 
     public function testData()
     {
-        $doc = file_get_contents('availability-sample.html');
-        $res1 = $this->booker->extractAvailabilityData($doc);
-        $res2 = $this->booker->findSlot($res1, '05:00pm', 4);
+        $res1 = self::$booker->extractAvailabilityData(self::$data);
+        $res2 = self::$booker->findSlot($res1, '05:00pm', 4);
         $this->assertTrue(array_key_exists('court', $res2));
         $this->assertTrue(array_key_exists('time', $res2));
         $this->assertTrue(array_key_exists('slots', $res2));
-   }
+    }
 }
