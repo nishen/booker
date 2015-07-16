@@ -93,11 +93,18 @@ class Booker
         return $result;
     }
 
+    public function logout()
+    {
+        $res = $this->client->get('login/logout');
+
+        return $res->getBody();
+    }
+
     public function dashboard()
     {
         $result = null;
 
-        $res = $this->client->post('dashboard', [
+        $res = $this->client->get('dashboard', [
             'headers' => [
                 'Accept-Encoding' => 'gzip, deflate, sdch',
                 'Referer' => 'https://secure.activecarrot.com/customer/mobile/login?site=382'
@@ -126,7 +133,7 @@ class Booker
             'headers' => [
                 'Accept' => 'text/html, */*; q=0.01',
                 'Accept-Encoding' => 'gzip, deflate, sdch',
-                'Referer' => 'https://secure.activecarrot.com/customer/mobile/login?site=382',
+                'Referer' => 'https://secure.activecarrot.com/customer/mobile/dashboard',
                 'X-Requested-With' => 'XMLHttpRequest'
             ],
             'allow_redirects' => false
