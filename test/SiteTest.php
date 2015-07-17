@@ -9,8 +9,6 @@
 
 require_once __DIR__ . '/../app/config.php';
 
-use DateTime;
-use Katzgrau\KLogger\Logger;
 use nishen\Booker;
 use PHPUnit_Framework_TestCase;
 
@@ -42,21 +40,21 @@ class SiteTest extends PHPUnit_Framework_TestCase
         $this->assertTrue(strpos($location, 'dashboard') !== false, "location for dashboard is incorrect: $location");
 
         self::$log->debug("sleeping...");
-        sleep(3);
+        sleep(1);
 
         self::$log->debug("getting dashboard...");
         $body = $booker->dashboard();
-        $this->assertGreaterThan(strlen($body), 1, "dashboard contains no text");
+        $this->assertGreaterThan(1000, strlen($body), "dashboard contains no text");
 
         self::$log->debug("sleeping...");
-        sleep(4);
+        sleep(3);
 
         self::$log->debug("getting availability...");
         $availability = $booker->getFacilityAvailability();
         $this->assertNotNull($availability, "no availability");
 
         self::$log->debug("finding slot...");
-        $slot = $booker->findSlot($availability, '05:00pm', 2);
+        $slot = $booker->findSlot($availability, '05:00pm', 4);
 
         $this->assertNotNull($slot, "no slots found...");
         self::$log->debug("court: {$slot['court']}, time: {$slot['time']}, slots: {$slot['slots']}");

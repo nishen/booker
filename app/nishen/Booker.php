@@ -8,15 +8,13 @@
 
 require_once __DIR__ . '/../config.php';
 
-use \DateTime;
-use \DateTimeZone;
-use \GuzzleHttp\Client;
-use \Katzgrau\KLogger\Logger;
-use \Psr\Log\LogLevel;
+use DateTime;
+use DateTimeZone;
+use GuzzleHttp\Client;
 
 class Booker
 {
-    private $log;
+    private static $log;
 
     private $username;
 
@@ -26,8 +24,9 @@ class Booker
 
     function __construct($username, $password)
     {
-        $this->log = new Logger(__DIR__ . '/../log', LogLevel::DEBUG);
-        $this->log->debug("instantiated class...");
+        global $log;
+
+        self::$log = $log;
 
         $this->username = $username;
         $this->password = $password;
@@ -112,7 +111,7 @@ class Booker
             'allow_redirects' => false
         ]);
 
-        $result = $res->getBody();
+        $result = strval($res->getBody());
 
         return $result;
     }
@@ -177,13 +176,13 @@ class Booker
             {
                 reset($intersect);
                 $result = array('court' => $id, 'time' => $court['timeu'][key($intersect)], 'slots' => $slots);
-                $this->log->debug("results: ", $result);
+                self::$log->debug("results: " . print_r($result, true));
 
                 return $result;
             }
         }
 
-        $this->log->debug("no slot found: " . $startTime);
+        self::$log->debug("no slot found: " . $startTime);
 
         return null;
     }
