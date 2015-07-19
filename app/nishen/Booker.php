@@ -10,6 +10,7 @@ require_once __DIR__ . '/../config.php';
 
 use DateTime;
 use DateTimeZone;
+use Exception;
 use GuzzleHttp\Client;
 
 class Booker
@@ -36,7 +37,7 @@ class Booker
 			'timeout' => 120.0,
 			'cookies' => TRUE,
 			'verify' => FALSE,
-			//'proxy' => 'tcp://localhost:8888',
+			'proxy' => 'tcp://localhost:8888',
 			'headers' => [
 				'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
 				'Accept-Encoding' => 'gzip, deflate',
@@ -113,14 +114,26 @@ class Booker
 		return strval($result->getBody());
 	}
 
-	public function getFacilityAvailability($date = NULL, $facility = '753')
+	public function getFacilityAvailability($time = NULL, $facility = '753')
 	{
 		$result = NULL;
 
-		if ($date == NULL)
+		$date = $time == NULL ? new DateTime() : new DateTime($time);
+		if ($time == NULL)
 		{
-			$date = new DateTime();
 			$date->modify('+2 days');
+			$date->setTime(17, 0, 0);
+		}
+		else
+		{
+			$tmp = new DateTime();
+			$tmp->modify('+3 days');
+			$tmp->setTime(0, 0, 0);
+
+			if ($date > $tmp)
+			{
+				throw new Exception("date+time exceeds booking window: {$date->format('Y-m-d H:i:s')}");
+			}
 		}
 
 		$endpoint = 'facility/browse/' . $facility . '/' . $date->format('Y-m-d');
@@ -193,7 +206,7 @@ class Booker
 		return $result;
 	}
 
-	public function bookingDialog($facility, $resource, $time, $duration)
+	public function bookingDialog($facility, $resource, $time)
 	{
 		$date = new DateTime('@' . $time, new DateTimeZone("Australia/NSW"));
 
@@ -201,15 +214,15 @@ class Booker
 		$endpoint = "facility/book_dialog/{$time}/{$resource}";
 		self::$log->debug("endpoint: {$endpoint}");
 
-		$referrer = $this->client->getConfig('base_uri') . "facility/browse/{$facility}/{$date->format('Y-m-d')}";
-		self::$log->debug("referrer: {$referrer}");
-
-		return NULL;
+		$referer = $this->client->getConfig('base_uri') . "facility/browse/{$facility}/{$date->format('Y-m-d')}";
+		self::$log->debug("referer: {$referer}");
 
 		$result = $this->client->get($endpoint, [
 			'headers' => [
+				'Accept' => 'text/html, */*; q=0.01',
 				'Accept-Encoding' => 'gzip, deflate, sdch',
-				'Referer' => 'https://secure.activecarrot.com/customer/mobile/login?site=382'
+				'Referer' => $referer,
+				'X-Requested-With' => 'XMLHttpRequest'
 			],
 			'allow_redirects' => FALSE
 		]);
@@ -217,39 +230,88 @@ class Booker
 		return strval($result->getBody());
 	}
 
-	public function book($facility, $resource, $time, $duration)
+	public function book($facility, $resource, $time, $slots)
 	{
 		$date = new DateTime('@' . $time, new DateTimeZone("Australia/NSW"));
 
 		// endpoint: https://secure.activecarrot.com/customer/mobile/facility/book_dialog/1437375600/4591
-		$endpoint = "facility/book_dialog/{$time}/{$resource}";
+		$endpoint = "facility/book_ajax";
 		self::$log->debug("endpoint: {$endpoint}");
 
-		// referrer: https://secure.activecarrot.com/customer/mobile/facility/browse/753/2015-07-20
-		$referrer = $this->client->getConfig('base_uri') . "facility/browse/{$facility}/{$date->format('Y-m-d')}";
-		self::$log->debug("referrer: {$referrer}");
-
-		$result = NULL;
+		// referer: https://secure.activecarrot.com/customer/mobile/facility/browse/753/2015-07-20
+		$referer = $this->client->getConfig('base_uri') . "facility/browse/{$facility}/{$date->format('Y-m-d')}";
+		self::$log->debug("referer: {$referer}");
 
 		$endpoint = 'facility/book_ajax';
 
 		$res = $this->client->post($endpoint, [
 			'form_params' => [
-				'username' => $this->username,
-				'password' => $this->password,
-				'submit' => 'submit-value'
+				'site_facility_id' => $resource,
+				'booking_time' => $time,
+				'event_duration' => ($slots * 30)
 			],
 			'headers' => [
 				'Accept' => 'application/json, text/javascript, */*; q=0.01',
 				'Accept-Encoding' => 'gzip, deflate',
 				'Content-Type: application/x-www-form-urlencoded; charset=UTF-8',
 				'Origin' => 'https://secure.activecarrot.com',
-				'Referer' => 'https://secure.activecarrot.com/customer/mobile/dashboard',
+				'Referer' => $referer,
 				'X-Requested-With' => 'XMLHttpRequest'
 			]
 		]);
 
-		self::$log->debug("headers: {$referrer}");
+		self::$log->debug("headers: {$referer}");
+
+		return strval($res->getBody());
+	}
+
+	public function getConfirmation($facility, $time)
+	{
+		$date = new DateTime('@' . $time, new DateTimeZone("Australia/NSW"));
+
+		// https://secure.activecarrot.com/customer/mobile/facility/book_dialog/1437375600/4591
+		$endpoint = "facility/confirm";
+		self::$log->debug("endpoint: {$endpoint}");
+
+		$referer = $this->client->getConfig('base_uri') . "facility/browse/{$facility}/{$date->format('Y-m-d')}";
+		self::$log->debug("referer: {$referer}");
+
+		$result = $this->client->get($endpoint, [
+			'headers' => [
+				'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+				'Accept-Encoding' => 'gzip, deflate, sdch',
+				'Referer' => $referer
+			],
+			'allow_redirects' => FALSE
+		]);
+
+		return strval($result->getBody());
+	}
+
+	public function confirm($resource)
+	{
+		$endpoint = "facility/confirm";
+		self::$log->debug("endpoint: {$endpoint}");
+
+		$referer = "facility/confirm";
+		self::$log->debug("referer: {$referer}");
+
+		$res = $this->client->post($endpoint, [
+			'form_params' => [
+				'site_facility_id' => $resource,
+				'submit' => 'Confirm+Booking'
+			],
+			'headers' => [
+				'Accept' => 'application/json, text/javascript, */*; q=0.01',
+				'Accept-Encoding' => 'gzip, deflate',
+				'Content-Type: application/x-www-form-urlencoded; charset=UTF-8',
+				'Origin' => 'https://secure.activecarrot.com',
+				'Referer' => $referer,
+				'X-Requested-With' => 'XMLHttpRequest'
+			]
+		]);
+
+		self::$log->debug("headers: {$referer}");
 
 		return strval($res->getBody());
 	}
