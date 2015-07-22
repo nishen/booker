@@ -153,7 +153,7 @@ class Booker
 
 	public function extractAvailabilityData($doc)
 	{
-		$result = preg_match_all('|<a href="/customer/mobile/facility/book_dialog/(\d+)/(\d+)" data-rel="dialog">(.{7})</a>|', $doc, $data, PREG_SET_ORDER);
+		$result = preg_match_all('|<a href="/customer/mobile/facility/book_dialog/(\d+)/(\d+)" model-rel="dialog">(.{7})</a>|', $doc, $data, PREG_SET_ORDER);
 
 		return $result > 0 ? $data : NULL;
 	}

@@ -1,0 +1,53 @@
+DROP TABLE IF EXISTS resource;
+DROP TABLE IF EXISTS booking;
+DROP TABLE IF EXISTS preference;
+DROP TABLE IF EXISTS user;
+
+CREATE TABLE user
+(
+	id       INTEGER PRIMARY KEY AUTO_INCREMENT,
+	username VARCHAR(20)  NOT NULL UNIQUE,
+	password VARCHAR(20)  NOT NULL,
+	name     VARCHAR(100) NOT NULL,
+	email    VARCHAR(250) NOT NULL,
+	created  TIMESTAMP           DEFAULT 0,
+	updated  TIMESTAMP           DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP
+)
+	ENGINE = InnoDB;
+
+CREATE TABLE preference
+(
+	id      INTEGER PRIMARY KEY AUTO_INCREMENT,
+	user_id INTEGER REFERENCES user (id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
+	name    VARCHAR(50)  NOT NULL,
+	value   VARCHAR(250) NOT NULL,
+	created TIMESTAMP           DEFAULT 0,
+	updated TIMESTAMP           DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP
+)
+	ENGINE = InnoDB;
+
+CREATE TABLE booking
+(
+	id      INTEGER PRIMARY KEY AUTO_INCREMENT,
+	user_id INTEGER REFERENCES user (id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
+	time    DATETIME    NOT NULL,
+	court   VARCHAR(10) NOT NULL,
+	status  VARCHAR(10) NOT NULL,
+	created TIMESTAMP           DEFAULT 0,
+	updated TIMESTAMP           DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP
+)
+	ENGINE = InnoDB;
+
+CREATE TABLE resource
+(
+	id      INTEGER PRIMARY KEY AUTO_INCREMENT,
+	name    VARCHAR(50) NOT NULL,
+	value   VARCHAR(50) NOT NULL,
+	created TIMESTAMP           DEFAULT 0,
+	updated TIMESTAMP           DEFAULT current_timestamp ON UPDATE CURRENT_TIMESTAMP
+)
+	ENGINE = InnoDB;

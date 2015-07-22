@@ -1,0 +1,36 @@
+<config>
+	<propel>
+		<paths>
+			<projectDir>..</projectDir>
+			<composerDir>..</composerDir>
+			<schemaDir>../model</schemaDir>
+			<outputDir>../model</outputDir>
+			<phpDir>../app/model</phpDir>
+			<phpConfDir>../app/model</phpConfDir>
+			<sqlDir>generated-sql</sqlDir>
+		</paths>
+		<database>
+			<connections>
+				<connection id="booking">
+					<adapter>mysql</adapter>
+					<classname>Propel\Runtime\Connection\ConnectionWrapper</classname>
+					<dsn>mysql:host=nishen.net;dbname=nishen_booking</dsn>
+					<user>nishen_booking</user>
+					<password>booking2015</password>
+				</connection>
+			</connections>
+		</database>
+		<runtime>
+			<defaultConnection>booking</defaultConnection>
+			<connections>
+				<connection>booking</connection>
+			</connections>
+		</runtime>
+		<generator>
+			<defaultConnection>booking</defaultConnection>
+			<connections>
+				<connection>booking</connection>
+			</connections>
+		</generator>
+	</propel>
+</config>

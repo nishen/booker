@@ -17,6 +17,7 @@
           <root url="file://$MODULE_DIR$/vendor/sebastian/version" />
           <root url="file://$MODULE_DIR$/vendor/phpunit/php-code-coverage" />
           <root url="file://$MODULE_DIR$/vendor/phpspec/prophecy" />
+          <root url="file://$MODULE_DIR$/vendor/nikic/fast-route" />
           <root url="file://$MODULE_DIR$/vendor/psr/http-message" />
           <root url="file://$MODULE_DIR$/vendor/guzzlehttp/psr7" />
           <root url="file://$MODULE_DIR$/vendor/phpunit/php-text-template" />
@@ -26,11 +27,15 @@
           <root url="file://$MODULE_DIR$/vendor/sebastian/comparator" />
           <root url="file://$MODULE_DIR$/vendor/guzzlehttp/guzzle" />
           <root url="file://$MODULE_DIR$/vendor/phpunit/php-file-iterator" />
+          <root url="file://$MODULE_DIR$/vendor/container-interop/container-interop" />
           <root url="file://$MODULE_DIR$/vendor/symfony/yaml" />
+          <root url="file://$MODULE_DIR$/vendor/propel/propel" />
           <root url="file://$MODULE_DIR$/vendor/phpunit/phpunit-mock-objects" />
           <root url="file://$MODULE_DIR$/vendor/sebastian/global-state" />
+          <root url="file://$MODULE_DIR$/vendor/slim/slim" />
           <root url="file://$MODULE_DIR$/vendor/doctrine/instantiator" />
           <root url="file://$MODULE_DIR$/vendor/sebastian/diff" />
+          <root url="file://$MODULE_DIR$/vendor/pimple/pimple" />
           <root url="file://$MODULE_DIR$/vendor/guzzlehttp/promises" />
           <root url="file://$MODULE_DIR$/vendor/phpunit/phpunit" />
           <root url="file://$MODULE_DIR$/vendor/composer" />
@@ -44,6 +49,7 @@
           <root url="file://$MODULE_DIR$/vendor/sebastian/version" />
           <root url="file://$MODULE_DIR$/vendor/phpunit/php-code-coverage" />
           <root url="file://$MODULE_DIR$/vendor/phpspec/prophecy" />
+          <root url="file://$MODULE_DIR$/vendor/nikic/fast-route" />
           <root url="file://$MODULE_DIR$/vendor/psr/http-message" />
           <root url="file://$MODULE_DIR$/vendor/guzzlehttp/psr7" />
           <root url="file://$MODULE_DIR$/vendor/phpunit/php-text-template" />
@@ -53,11 +59,15 @@
           <root url="file://$MODULE_DIR$/vendor/sebastian/comparator" />
           <root url="file://$MODULE_DIR$/vendor/guzzlehttp/guzzle" />
           <root url="file://$MODULE_DIR$/vendor/phpunit/php-file-iterator" />
+          <root url="file://$MODULE_DIR$/vendor/container-interop/container-interop" />
           <root url="file://$MODULE_DIR$/vendor/symfony/yaml" />
+          <root url="file://$MODULE_DIR$/vendor/propel/propel" />
           <root url="file://$MODULE_DIR$/vendor/phpunit/phpunit-mock-objects" />
           <root url="file://$MODULE_DIR$/vendor/sebastian/global-state" />
+          <root url="file://$MODULE_DIR$/vendor/slim/slim" />
           <root url="file://$MODULE_DIR$/vendor/doctrine/instantiator" />
           <root url="file://$MODULE_DIR$/vendor/sebastian/diff" />
+          <root url="file://$MODULE_DIR$/vendor/pimple/pimple" />
           <root url="file://$MODULE_DIR$/vendor/guzzlehttp/promises" />
           <root url="file://$MODULE_DIR$/vendor/phpunit/phpunit" />
           <root url="file://$MODULE_DIR$/vendor/composer" />

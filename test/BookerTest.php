@@ -30,7 +30,7 @@ class BookerTest extends PHPUnit_Framework_TestCase
 		self::$log->debug("beginning test suite");
 		self::$log->debug("====================");
 
-		self::$page = file_get_contents('data/availability-sample.html');
+		self::$page = file_get_contents('model/availability-sample.html');
 		self::$booker = new Booker('', '');
 	}
 
