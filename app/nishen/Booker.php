@@ -1,4 +1,4 @@
-<?php namespace nishen;
+<?php namespace Nishen;
 /**
  * Created by PhpStorm.
  * User: nishen
@@ -22,6 +22,8 @@ class Booker
 	private $password;
 
 	private $client;
+
+	private $courtMap;
 
 	function __construct($username, $password)
 	{
@@ -49,6 +51,15 @@ class Booker
 				'User-Agent' => 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/600.1.3 (KHTML, like Gecko) Version/8.0 Mobile/12A4345d Safari/600.1.4'
 			]
 		]);
+
+		$this->courtMap = [
+			4591 => 1,
+			4592 => 2,
+			4593 => 3,
+			4594 => 4,
+			4595 => 5,
+			4596 => 6
+		];
 	}
 
 	public function getLoginPage()
@@ -122,7 +133,14 @@ class Booker
 		if ($time == NULL)
 		{
 			$date->modify('+2 days');
-			$date->setTime(17, 0, 0);
+			if ($date->format('N') > 5)
+			{
+				$date->setTime(10, 0, 0);
+			}
+			else
+			{
+				$date->setTime(17, 0, 0);
+			}
 		}
 		else
 		{
@@ -153,12 +171,12 @@ class Booker
 
 	public function extractAvailabilityData($doc)
 	{
-		$result = preg_match_all('|<a href="/customer/mobile/facility/book_dialog/(\d+)/(\d+)" model-rel="dialog">(.{7})</a>|', $doc, $data, PREG_SET_ORDER);
+		$result = preg_match_all('|<a href="/customer/mobile/facility/book_dialog/(\d+)/(\d+)".*>(.{7})</a>|', $doc, $data, PREG_SET_ORDER);
 
 		return $result > 0 ? $data : NULL;
 	}
 
-	public function findSlot($data, $time, $slots = 4)
+	public function findSlots($data, $time, $slots = 4)
 	{
 		$courts = [];
 		foreach ($data as $item)
@@ -233,6 +251,9 @@ class Booker
 	public function book($facility, $resource, $time, $slots)
 	{
 		$date = new DateTime('@' . $time, new DateTimeZone("Australia/NSW"));
+
+		if ($slots < 2) $slots = 2;
+		if ($slots > 4) $slots = 4;
 
 		// endpoint: https://secure.activecarrot.com/customer/mobile/facility/book_dialog/1437375600/4591
 		$endpoint = "facility/book_ajax";
@@ -314,5 +335,19 @@ class Booker
 		self::$log->debug("headers: {$referer}");
 
 		return strval($res->getBody());
+	}
+
+	public function selectSlot($slots, $order)
+	{
+		foreach ($order as $o)
+		{
+			foreach ($slots as $s)
+			{
+				if ($o == $this->courtMap[$s['court']])
+				{
+					return $s;
+				}
+			}
+		}
 	}
 }

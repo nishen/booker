@@ -17,27 +17,38 @@ Activities:
   schedule booking
 */
 
-/*
-$user = new Model\User;
-$user->setUsername('nishen');
-$user->setPassword('nishen');
-$user->setName('Nishen Naidoo');
-$user->setEmail('nish.naidoo@gmail.com');
-$user->setCreated(new DateTime());
-$user->save();
-*/
-
 use Slim\App;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
+use Nishen\RequestHandler;
 
 $app = new App();
-$app->get('/user/{id}', function (Request $request, Response $response, $args)
+$rh = new RequestHandler($log);
+
+$app->get('/user', function (Request $req, Response $res) use ($rh)
 {
-	$u = new \Model\UserQuery();
-	$user = $u->findPk($args['id']);
-	$response->write($user->toJSON());
+	$rh->getUsers($res);
+});
+
+$app->post('/user', function (Request $req, Response $res) use ($rh)
+{
+	$rh->addUser($req, $res);
+});
+
+$app->get('/user/{id}', function (Request $req, Response $res, $args) use ($rh)
+{
+	$rh->getUser($req, $res, $args);
+});
+
+$app->put('/user/{id}', function (Request $req, Response $res, $args) use ($rh)
+{
+	$rh->modUser($req, $res, $args);
+});
+
+$app->delete('/user/{id}', function (Request $req, Response $res, $args) use ($rh)
+{
+	$rh->delUser($req, $res, $args);
 });
 
 $app->run();

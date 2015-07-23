@@ -9,7 +9,7 @@
 
 require_once __DIR__ . '/../app/config.php';
 
-use nishen\Booker;
+use Nishen\Booker;
 use PHPUnit_Framework_TestCase;
 
 class BookerTest extends PHPUnit_Framework_TestCase
@@ -30,7 +30,7 @@ class BookerTest extends PHPUnit_Framework_TestCase
 		self::$log->debug("beginning test suite");
 		self::$log->debug("====================");
 
-		self::$page = file_get_contents('model/availability-sample.html');
+		self::$page = file_get_contents('data/availability-sample.html');
 		self::$booker = new Booker('', '');
 	}
 
@@ -60,21 +60,20 @@ class BookerTest extends PHPUnit_Framework_TestCase
 		self::$log->debug("test: " . __METHOD__);
 
 		$time = '2015-07-03 05:00pm';
-		$facility = '753';
 		$page = self::$page;
-		//$page = self::$booker->getFacilityAvailability($time, $facility);
 		$data = self::$booker->extractAvailabilityData($page);
-		$slots = self::$booker->findSlot($data, $time, 4);
+		$slots = self::$booker->findSlots($data, $time, 4);
 
 		$this->assertGreaterThan(0, count($slots), '3 slots not found!');
-		$this->assertTrue(array_key_exists('date', $slots[0]));
-		$this->assertTrue(array_key_exists('court', $slots[0]));
-		$this->assertTrue(array_key_exists('timeu', $slots[0]));
-		$this->assertTrue(array_key_exists('times', $slots[0]));
-		$this->assertTrue(array_key_exists('slots', $slots[0]));
 
-		$s = $slots[0];
-		self::$booker->bookingDialog($facility, $s['court'], $s['timeu'], $s['slots']);
+		$s = self::$booker->selectSlot($slots, array_reverse([1, 2, 3, 4, 5, 6]));
+		self::$log->debug("selected slot: " . print_r($s, TRUE));
+
+		$this->assertTrue(array_key_exists('date', $s));
+		$this->assertTrue(array_key_exists('court', $s));
+		$this->assertTrue(array_key_exists('timeu', $s));
+		$this->assertTrue(array_key_exists('times', $s));
+		$this->assertTrue(array_key_exists('slots', $s));
 	}
 
 	public function testInvalidData()
@@ -82,7 +81,7 @@ class BookerTest extends PHPUnit_Framework_TestCase
 		self::$log->debug("test: " . __METHOD__);
 
 		$data = self::$booker->extractAvailabilityData(self::$page);
-		$slots = self::$booker->findSlot($data, '2015-07-04 05:00pm', 4);
+		$slots = self::$booker->findSlots($data, '2015-07-04 05:00pm', 4);
 		$this->assertEquals(0, count($slots), 'found results incorrectly.');
 	}
 }
