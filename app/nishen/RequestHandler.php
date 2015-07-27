@@ -9,19 +9,10 @@
 
 
 use Analog\Logger;
-
 use Model\User;
-use Model\Booking;
-use Model\Preference;
-use Model\Resource;
 use Model\UserQuery;
-use Model\BookingQuery;
-use Model\PreferenceQuery;
-use Model\ResourceQuery;
-
 use Slim\Http\Request;
 use Slim\Http\Response;
-
 
 class RequestHandler
 {
@@ -51,14 +42,15 @@ class RequestHandler
 		$res->write($user->toJSON());
 	}
 
-	public function getUser(Request $req, Response $res, $args)
+	public function getUser(Response $res, $args)
 	{
 		$u = new UserQuery();
 		$user = $u->findPk($args['id']);
+		$this->log->debug("user value:" . print_r($user));
 		if ($user == NULL)
 		{
-			$res->withStatus(404, "resource not found")
-				->write('{"error": {"code": 404, "mesg": "resource not found"}}');
+			$res2 = $res->withStatus(404);
+			$res2->write('{"error": {"code": 404, "mesg": "resource not found"}}');
 		}
 		else
 		{
@@ -86,10 +78,8 @@ class RequestHandler
 		}
 	}
 
-	public function delUser(Request $req, Response $res, $args)
+	public function delUser(Response $res, $args)
 	{
-		$body = file_get_contents($req->getBody()->getMetadata('uri'));
-
 		$u = new UserQuery();
 		$user = $u->findPk($args['id']);
 		if ($user == NULL)

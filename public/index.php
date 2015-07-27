@@ -17,11 +17,10 @@ Activities:
   schedule booking
 */
 
+use Nishen\RequestHandler;
 use Slim\App;
 use Slim\Http\Request;
 use Slim\Http\Response;
-
-use Nishen\RequestHandler;
 
 $app = new App();
 $rh = new RequestHandler($log);
@@ -38,7 +37,7 @@ $app->post('/user', function (Request $req, Response $res) use ($rh)
 
 $app->get('/user/{id}', function (Request $req, Response $res, $args) use ($rh)
 {
-	$rh->getUser($req, $res, $args);
+	$rh->getUser($res, $args);
 });
 
 $app->put('/user/{id}', function (Request $req, Response $res, $args) use ($rh)
@@ -48,7 +47,7 @@ $app->put('/user/{id}', function (Request $req, Response $res, $args) use ($rh)
 
 $app->delete('/user/{id}', function (Request $req, Response $res, $args) use ($rh)
 {
-	$rh->delUser($req, $res, $args);
+	$rh->delUser($res, $args);
 });
 
 $app->run();

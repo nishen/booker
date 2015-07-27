@@ -1,4 +1,4 @@
-<?php namespace test;
+<?php namespace Test;
 
 /**
  * Created by PhpStorm.

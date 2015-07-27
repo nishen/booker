@@ -1,4 +1,4 @@
-<?php namespace test;
+<?php namespace Test;
 
 	/**
 	 * Created by PhpStorm.
@@ -59,8 +59,8 @@ class SiteTest extends PHPUnit_Framework_TestCase
 		self::$log->debug("sleeping...");
 		sleep(2);
 
-		$numSlots = 1;
-		$time = '2015-07-24 03:00pm';
+		$numSlots = 4;
+		$time = '2015-07-29 05:00pm';
 		//$time = NULL;
 		$facility = '753';
 		self::$log->debug("getting availability");
