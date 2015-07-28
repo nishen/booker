@@ -39,8 +39,8 @@ class BookerTest extends PHPUnit_Framework_TestCase
 		self::$log->debug("====================");
 		self::$log->debug("completed test suite");
 
-		self::$page = NULL;
-		self::$booker = NULL;
+		self::$page = null;
+		self::$booker = null;
 	}
 
 	public function setUp()
@@ -67,7 +67,7 @@ class BookerTest extends PHPUnit_Framework_TestCase
 		$this->assertGreaterThan(0, count($slots), '3 slots not found!');
 
 		$s = self::$booker->selectSlot($slots, array_reverse([1, 2, 3, 4, 5, 6]));
-		self::$log->debug("selected slot: " . print_r($s, TRUE));
+		self::$log->debug("selected slot: " . print_r($s, true));
 
 		$this->assertTrue(array_key_exists('date', $s));
 		$this->assertTrue(array_key_exists('court', $s));

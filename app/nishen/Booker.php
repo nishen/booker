@@ -37,9 +37,9 @@ class Booker
 		$this->client = new Client([
 			'base_uri' => 'https://secure.activecarrot.com/customer/mobile/',
 			'timeout' => 120.0,
-			'cookies' => TRUE,
-			'verify' => FALSE,
-			'proxy' => 'tcp://localhost:8888',
+			'cookies' => true,
+			'verify' => false,
+			//'proxy' => 'tcp://localhost:8888',
 			'headers' => [
 				'Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
 				'Accept-Encoding' => 'gzip, deflate',
@@ -71,7 +71,7 @@ class Booker
 
 	public function login()
 	{
-		$result = NULL;
+		$result = null;
 
 		$res = $this->client->post('login', [
 			'form_params' => [
@@ -84,13 +84,13 @@ class Booker
 				'Content-Type' => 'application/x-www-form-urlencoded',
 				'Origin' => 'https://secure.activecarrot.com'
 			],
-			'allow_redirects' => FALSE
+			'allow_redirects' => false
 		]);
 
 		switch ($res->getStatusCode())
 		{
 			case 200:
-				$result = NULL;
+				$result = null;
 				break;
 
 			case 301:
@@ -119,18 +119,18 @@ class Booker
 				'Accept-Encoding' => 'gzip, deflate, sdch',
 				'Referer' => 'https://secure.activecarrot.com/customer/mobile/login?site=382'
 			],
-			'allow_redirects' => FALSE
+			'allow_redirects' => false
 		]);
 
 		return strval($result->getBody());
 	}
 
-	public function getFacilityAvailability($time = NULL, $facility = '753')
+	public function getFacilityAvailability($time = null, $facility = '753')
 	{
-		$result = NULL;
+		$result = null;
 
-		$date = $time == NULL ? new DateTime() : new DateTime($time);
-		if ($time == NULL)
+		$date = $time == null ? new DateTime() : new DateTime($time);
+		if ($time == null)
 		{
 			$date->modify('+2 days');
 			if ($date->format('N') > 5)
@@ -163,7 +163,7 @@ class Booker
 				'Referer' => 'https://secure.activecarrot.com/customer/mobile/dashboard',
 				'X-Requested-With' => 'XMLHttpRequest'
 			],
-			'allow_redirects' => FALSE
+			'allow_redirects' => false
 		]);
 
 		return strval($res->getBody());
@@ -173,7 +173,7 @@ class Booker
 	{
 		$result = preg_match_all('|<a href="/customer/mobile/facility/book_dialog/(\d+)/(\d+)".*>(.{7})</a>|', $doc, $data, PREG_SET_ORDER);
 
-		return $result > 0 ? $data : NULL;
+		return $result > 0 ? $data : null;
 	}
 
 	public function findSlots($data, $time, $slots = 4)
@@ -211,14 +211,14 @@ class Booker
 					'times' => $court['times'][key($intersect)],
 					'slots' => $slots
 				];
-				self::$log->debug("results: " . print_r($result, TRUE));
+				self::$log->debug("results: " . print_r($result, true));
 			}
 		}
 
 		if (count($result) == 0)
 		{
 			self::$log->debug("no slot found: " . $time);
-			$result = NULL;
+			$result = null;
 		}
 
 		return $result;
@@ -242,7 +242,7 @@ class Booker
 				'Referer' => $referer,
 				'X-Requested-With' => 'XMLHttpRequest'
 			],
-			'allow_redirects' => FALSE
+			'allow_redirects' => false
 		]);
 
 		return strval($result->getBody());
@@ -303,7 +303,7 @@ class Booker
 				'Accept-Encoding' => 'gzip, deflate, sdch',
 				'Referer' => $referer
 			],
-			'allow_redirects' => FALSE
+			'allow_redirects' => false
 		]);
 
 		return strval($result->getBody());
@@ -349,5 +349,7 @@ class Booker
 				}
 			}
 		}
+
+		return null;
 	}
 }

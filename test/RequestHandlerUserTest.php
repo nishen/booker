@@ -21,22 +21,21 @@ class RequestHandlerUserTest extends PHPUnit_Framework_TestCase
 
 	public static function setUpBeforeClass()
 	{
-		global $log;
-
-		self::$log = $log;
+		self::$log = $GLOBALS['log'];
 
 		self::$log->debug("beginning test suite");
 		self::$log->debug("====================");
 
 		self::$client = new Client([
-			'base_uri' => 'http://localhost/v1/',
-			'cookies' => TRUE,
+			'base_uri' => 'http://localhost/api/booker/v1/',
+			'cookies' => true,
 			'timeout' => 120.0,
-			'verify' => FALSE,
-			'proxy' => 'tcp://localhost:8888',
+			'verify' => false,
+			//'proxy' => 'tcp://localhost:8888',
 			'headers' => [
 				'Accept' => 'application/json',
-			]
+			],
+			'allow_redirects' => false
 		]);
 	}
 
@@ -58,7 +57,7 @@ class RequestHandlerUserTest extends PHPUnit_Framework_TestCase
 		self::$log->debug("completed test");
 	}
 
-	public function testUserAdd()
+	public function testUserCRD()
 	{
 		self::$log->debug("test: " . __METHOD__);
 
@@ -75,31 +74,72 @@ class RequestHandlerUserTest extends PHPUnit_Framework_TestCase
 			'body' => $body
 		]);
 		$user1 = strval($res->getBody());
-		self::$log->debug($user1);
-		$this->assertEquals(200, $res->getStatusCode(), "incorrect status");
+		$this->assertEquals(201, $res->getStatusCode(), "incorrect status");
 		$this->assertContains('"Id":', $user1, "'Id' attribute not found");
 		$this->assertContains('"Username":', $user1, "'Username' attribute not found");
 
 		$user = new User();
 		$user->fromJSON($user1);
-		self::$log->debug("User: " . print_r($user, TRUE));
 
 		$id = $user->getId();
 
 		// get the user and check the data
 		$res = self::$client->get("user/{$id}");
 		$user2 = strval($res->getBody());
-		self::$log->debug($user2);
 		$this->assertEquals(200, $res->getStatusCode(), "incorrect status");
 		$this->assertContains('"Id":' . $id, $user2, "'Id:{$id}' attribute not found");
 		$this->assertContains('"Username":', $user2, "'Username' attribute not found");
-
 
 		// delete the user
 		$res = self::$client->delete("user/{$id}");
 		$this->assertEquals(200, $res->getStatusCode(), "incorrect status");
 
-		$res = self::$client->get("user/{$id}");
-		$this->assertEquals(404, $res->getStatusCode(), "user seems to have been found.");
+		// get the user again to ensure it is gone.
+		$this->setExpectedException('GuzzleHttp\Exception\ClientException', 'Client error: 404', 404);
+		self::$client->get("user/{$id}");
+	}
+
+	public function testUserCUD()
+	{
+		self::$log->debug("test: " . __METHOD__);
+
+		$body = '{
+			"Username": "nishen",
+			"Password": "nishen",
+			"Name": "Nishen Naidoo",
+			"Email": "nish.naidoo@gmail.com",
+			"Created": "2015-07-25 15:00:00"
+		}';
+
+		// create the user
+		$res = self::$client->post("user?XDEBUG_SESSION_START=booker", [
+			'body' => $body
+		]);
+		$user1 = strval($res->getBody());
+		$this->assertEquals(201, $res->getStatusCode(), "incorrect status");
+		$this->assertContains('"Id":', $user1, "'Id' attribute not found");
+		$this->assertContains('"Username":', $user1, "'Username' attribute not found");
+
+		$user = new User();
+		$user->fromJSON($user1);
+
+		$id = $user->getId();
+
+		// update the user
+		$user->setName("Joe Blogs");
+		$body = $user->toJSON();
+		$res = self::$client->put("user/{$id}?XDEBUG_SESSION_START=booker", [
+			'body' => $body
+		]);
+
+		$user2 = strval($res->getBody());
+		$this->assertEquals(200, $res->getStatusCode(), "incorrect status");
+		$this->assertContains('"Id":' . $id, $user2, "'Id:{$id}' attribute not found");
+		$this->assertContains('"Username":', $user2, "'Username' attribute not found");
+		$this->assertContains('"Joe Blogs"', $user2, "'Name' not updated");
+
+		// delete the user
+		$res = self::$client->delete("user/{$id}");
+		$this->assertEquals(200, $res->getStatusCode(), "incorrect status");
 	}
 }

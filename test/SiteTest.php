@@ -47,7 +47,7 @@ class SiteTest extends PHPUnit_Framework_TestCase
 		sleep(1);
 		$location = $booker->login();
 		$this->assertNotNull($location, "location header not set for dashboard");
-		$this->assertTrue(strpos($location, 'dashboard') !== FALSE, "location for dashboard is incorrect: $location");
+		$this->assertTrue(strpos($location, 'dashboard') !== false, "location for dashboard is incorrect: $location");
 
 		self::$log->debug("sleeping...");
 		sleep(1);

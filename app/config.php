@@ -10,12 +10,13 @@ require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/model/config.php';
 require_once __DIR__ . '/nishen/Booker.php';
 require_once __DIR__ . '/nishen/RequestHandler.php';
+require_once __DIR__ . '/nishen/RequestHelper.php';
 
 use Analog\Analog;
-use Analog\Logger;
-use Analog\Handler\Multi;
 use Analog\Handler\File;
+use Analog\Handler\Multi;
 use Analog\Handler\Stderr;
+use Analog\Logger;
 
 /*
  * ==========================================================================
@@ -44,3 +45,5 @@ $log->handler(
   using %1$s style (sprintf) formatting to modify
 */
 $log->format("%2\$s [%3\$d]: %4\$s\n");
+
+$GLOBALS['log'] = $log;

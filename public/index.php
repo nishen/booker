@@ -23,31 +23,43 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 $app = new App();
-$rh = new RequestHandler($log);
+$h = new RequestHandler($log);
 
-$app->get('/user', function (Request $req, Response $res) use ($rh)
+$app->get('/', function (Request $req, Response $res)
 {
-	$rh->getUsers($res);
+	$res->withStatus(200)
+		->write("<h1>API ENDPOINT</h1>")
+		->write("<ul>")
+		->write("<li>user</li>")
+		->write("<li>preference</li>")
+		->write("<li>booking</li>")
+		->write("<li>resource</li>")
+		->write("</ul>");
 });
 
-$app->post('/user', function (Request $req, Response $res) use ($rh)
+$app->get('/user', function (Request $req, Response $res) use ($h)
 {
-	$rh->addUser($req, $res);
+	return $h->getUsers($res);
 });
 
-$app->get('/user/{id}', function (Request $req, Response $res, $args) use ($rh)
+$app->post('/user', function (Request $req, Response $res) use ($h)
 {
-	$rh->getUser($res, $args);
+	return $h->addUser($req, $res);
 });
 
-$app->put('/user/{id}', function (Request $req, Response $res, $args) use ($rh)
+$app->get('/user/{id}', function (Request $req, Response $res, $args) use ($h)
 {
-	$rh->modUser($req, $res, $args);
+	return $h->getUser($res, $args);
 });
 
-$app->delete('/user/{id}', function (Request $req, Response $res, $args) use ($rh)
+$app->put('/user/{id}', function (Request $req, Response $res, $args) use ($h)
 {
-	$rh->delUser($res, $args);
+	return $h->modUser($req, $res, $args);
+});
+
+$app->delete('/user/{id}', function (Request $req, Response $res, $args) use ($h)
+{
+	return $h->delUser($res, $args);
 });
 
 $app->run();

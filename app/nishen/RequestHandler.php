@@ -11,8 +11,10 @@
 use Analog\Logger;
 use Model\User;
 use Model\UserQuery;
+use Propel\Runtime\Exception\PropelException;
 use Slim\Http\Request;
 use Slim\Http\Response;
+
 
 class RequestHandler
 {
@@ -28,7 +30,7 @@ class RequestHandler
 		$u = new UserQuery();
 		$users = $u->find();
 
-		$res->write($users->toJSON());
+		return RequestHelper::json($res, $users->toJSON());
 	}
 
 	public function addUser(Request $req, Response $res)
@@ -37,25 +39,28 @@ class RequestHandler
 
 		$user = new User();
 		$user->fromJSON($body);
-		$user->save();
+		try
+		{
+			$user->save();
+		}
+		catch (PropelException $e)
+		{
+			return RequestHelper::json($res, null, 422);
+		}
 
-		$res->write($user->toJSON());
+		return RequestHelper::json($res, $user->toJSON(), 201)
+							->withAddedHeader('Location', $req->getUri() . "/" . $user->getId());
 	}
 
 	public function getUser(Response $res, $args)
 	{
 		$u = new UserQuery();
 		$user = $u->findPk($args['id']);
-		$this->log->debug("user value:" . print_r($user));
-		if ($user == NULL)
-		{
-			$res2 = $res->withStatus(404);
-			$res2->write('{"error": {"code": 404, "mesg": "resource not found"}}');
-		}
-		else
-		{
-			$res->write($user->toJSON());
-		}
+		$this->log->debug("user value:" . print_r($user, true));
+		if ($user == null)
+			return RequestHelper::json($res, null, 404);
+
+		return RequestHelper::json($res, $user->toJSON());
 	}
 
 	public function modUser(Request $req, Response $res, $args)
@@ -64,32 +69,32 @@ class RequestHandler
 
 		$u = new UserQuery();
 		$user = $u->findPk($args['id']);
-		if ($user == NULL)
-		{
-			$res->withStatus(404, "resource not found")
-				->write('{"error": {"code": 404, "mesg": "resource not found"}}');
-		}
-		else
+		if ($user == null)
+			return RequestHelper::json($res, null, 404);
+
+		try
 		{
 			$user->fromJSON($body);
 			$user->setId($args['id']);
 			$user->save();
-			$res->write($user->toJSON());
 		}
+		catch (PropelException $e)
+		{
+			return RequestHelper::json($res, null, 409);
+		}
+
+		return RequestHelper::json($res, $user->toJSON(), 200);
 	}
 
 	public function delUser(Response $res, $args)
 	{
 		$u = new UserQuery();
 		$user = $u->findPk($args['id']);
-		if ($user == NULL)
-		{
-			$res->withStatus(404, "resource not found")
-				->write('{"error": {"code": 404, "mesg": "resource not found"}}');
-		}
-		else
-		{
-			$user->delete();
-		}
+		if ($user == null)
+			return RequestHelper::json($res, null, 404);
+
+		$user->delete();
+
+		return RequestHelper::json($res, $user->toJSON(), 200);
 	}
 }
