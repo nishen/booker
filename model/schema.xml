@@ -8,8 +8,13 @@
 		<column name="status" phpName="Status" type="VARCHAR" size="10" required="true"/>
 		<column name="created" phpName="Created" type="TIMESTAMP" required="true" defaultValue="0000-00-00 00:00:00"/>
 		<column name="updated" phpName="Updated" type="TIMESTAMP" required="true" defaultExpr="CURRENT_TIMESTAMP"/>
+		<foreign-key foreignTable="user" name="bookingUserFK" phpName="User" refPhpName="Booking"
+					 onDelete="restrict" onUpdate="cascade" skipSql="false" defaultJoin="Criteria::INNER_JOIN">
+			<reference local="user_id" foreign="id"/>
+		</foreign-key>
 		<vendor type="mysql">
 			<parameter name="Engine" value="InnoDB"/>
+			<parameter name="Charset" value="utf8"/>
 		</vendor>
 	</table>
 	<table name="preference" idMethod="native" phpName="Preference">
@@ -19,8 +24,13 @@
 		<column name="value" phpName="Value" type="VARCHAR" size="250" required="true"/>
 		<column name="created" phpName="Created" type="TIMESTAMP" required="true" defaultValue="0000-00-00 00:00:00"/>
 		<column name="updated" phpName="Updated" type="TIMESTAMP" required="true" defaultExpr="CURRENT_TIMESTAMP"/>
+		<foreign-key foreignTable="user" name="preferenceUserFK" phpName="User" refPhpName="Preference"
+					 onDelete="restrict" onUpdate="cascade" skipSql="false" defaultJoin="Criteria::INNER_JOIN">
+			<reference local="user_id" foreign="id"/>
+		</foreign-key>
 		<vendor type="mysql">
 			<parameter name="Engine" value="InnoDB"/>
+			<parameter name="Charset" value="utf8"/>
 		</vendor>
 	</table>
 	<table name="resource" idMethod="native" phpName="Resource">
@@ -31,6 +41,7 @@
 		<column name="updated" phpName="Updated" type="TIMESTAMP" required="true" defaultExpr="CURRENT_TIMESTAMP"/>
 		<vendor type="mysql">
 			<parameter name="Engine" value="InnoDB"/>
+			<parameter name="Charset" value="utf8"/>
 		</vendor>
 	</table>
 	<table name="user" idMethod="native" phpName="User">
@@ -46,6 +57,7 @@
 		</unique>
 		<vendor type="mysql">
 			<parameter name="Engine" value="InnoDB"/>
+			<parameter name="Charset" value="utf8"/>
 		</vendor>
 	</table>
 </database>

@@ -25,6 +25,9 @@ use Slim\Http\Response;
 $app = new App();
 $h = new RequestHandler($log);
 
+/*
+ * Default response
+ */
 $app->get('/', function (Request $req, Response $res)
 {
 	$res->withStatus(200)
@@ -36,6 +39,11 @@ $app->get('/', function (Request $req, Response $res)
 		->write("<li>resource</li>")
 		->write("</ul>");
 });
+
+
+/***********************************************************
+ * User API
+ ***********************************************************/
 
 $app->get('/user', function (Request $req, Response $res) use ($h)
 {
@@ -61,5 +69,36 @@ $app->delete('/user/{id}', function (Request $req, Response $res, $args) use ($h
 {
 	return $h->delUser($res, $args);
 });
+
+
+/***********************************************************
+ * Booking API
+ ***********************************************************/
+
+$app->get('/booking', function (Request $req, Response $res) use ($h)
+{
+	return $h->getBookings($res);
+});
+
+$app->post('/booking', function (Request $req, Response $res) use ($h)
+{
+	return $h->addBooking($req, $res);
+});
+
+$app->get('/booking/{id}', function (Request $req, Response $res, $args) use ($h)
+{
+	return $h->getBooking($res, $args);
+});
+
+$app->put('/booking/{id}', function (Request $req, Response $res, $args) use ($h)
+{
+	return $h->modBooking($req, $res, $args);
+});
+
+$app->delete('/booking/{id}', function (Request $req, Response $res, $args) use ($h)
+{
+	return $h->delBooking($res, $args);
+});
+
 
 $app->run();
