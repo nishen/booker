@@ -1,0 +1,509 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+		"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="eng" lang="eng">
+<head>
+	<title>ActiveCarrot mobile application</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<!-- 	<meta http-equiv="refresh" content="300;URL=/login/logout?session_timeout" /> -->
+	<link rel="stylesheet" type="text/css" href="/media/css/jquery_mobile/jquery.mobile-1.3.0.min.css"/>
+	<link rel="stylesheet" type="text/css" href="/media/css/mobile.css"/>
+
+	<script type="text/javascript" src="/media/js/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript" src="/media/js/jquery.mobile-1.3.0.min.js"></script>
+
+	<script type="text/javascript">
+		$(document).bind('pageinit', function () {
+
+			$('#load-more').unbind('tap').tap(function () {
+
+				var listData = '<li><a href="/customer/mobile/session/browse/2015-08-06">Thursday 6th August </a></li><li><a href="/customer/mobile/session/browse/2015-08-07">Friday 7th August </a></li><li><a href="/customer/mobile/session/browse/2015-08-08">Saturday 8th August </a></li><li><a href="/customer/mobile/session/browse/2015-08-09">Sunday 9th August </a></li><li><a href="/customer/mobile/session/browse/2015-08-10">Monday 10th August </a></li><li><a href="/customer/mobile/session/browse/2015-08-11">Tuesday 11th August </a></li><li><a href="/customer/mobile/session/browse/2015-08-12">Wednesday 12th August </a></li>';
+
+				$(this).remove();
+
+				$.mobile.loading('show');
+
+				setTimeout(function () {
+					$('#class-list').append(listData);
+
+					$('#class-list').listview('refresh');
+
+					$.mobile.loading('hide');
+				}, 500);
+
+			});
+
+			$('.session-list').unbind('tap').tap(function () {
+
+				var button = $(this);
+
+				button.addClass('ui-btn-active');
+
+				$.mobile.loading('show');
+
+				var sessionId = $(this).attr('session_id');
+				var sessionDate = $(this).attr('session_date');
+
+				$.ajax({
+					url: "/customer/mobile/session/load_session_ajax",
+					type: "POST",
+					dataType: "json",
+					data: 'session_id=' + sessionId + '&session_date=' + sessionDate,
+					success: function (result) {
+						if (result.error === false) {
+							$.mobile.navigate('/customer/mobile/session/confirm');
+						}
+						else {
+							$('#error-message').html(result.message);
+							$('#error-stack').show();
+							button.removeClass('ui-btn-active');
+						}
+
+						$.mobile.loading('hide');
+					},
+					error: function (jqXHR, textStatus, errorThrown) {
+						//alert('error');
+						$.mobile.loading('hide');
+
+						button.removeClass('ui-btn-active');
+					}
+				});
+			});
+
+			$('.hide_ui_message').unbind('tap').tap(function () {
+				$(this).parent().parent().fadeOut();
+			});
+
+			$('#book_now_facility').unbind('tap').tap(function () {
+				var siteFacilityId = $(this).attr('site_facility_id');
+				var bookingTime = $(this).attr('booking_time');
+				var duration = $('#event_duration').val();
+
+				$.mobile.loading('show');
+
+				$.ajax({
+					url: "/customer/mobile/facility/book_ajax",
+					type: "POST",
+					dataType: "json",
+					data: 'site_facility_id=' + siteFacilityId + '&booking_time=' + bookingTime + '&event_duration=' + duration,
+					success: function (result) {
+						if (result.error === false) {
+							//$.mobile.navigate( '/customer/mobile/facility/confirm' );
+							window.location.href = '/customer/mobile/facility/confirm';
+						}
+						else {
+							var x;
+
+							var messages = '';
+
+							for (x in result.errors) {
+								messages += result.errors[x] + '<br />';
+							}
+
+							$("#error-message").html(messages);
+							$('#error-stack').show();
+						}
+
+						$.mobile.loading('hide');
+					},
+					error: function (jqXHR, textStatus, errorThrown) {
+						//alert('error');
+						$.mobile.loading('hide');
+					}
+				});
+			});
+
+			$('#book_now_overlayfacility').unbind('tap').tap(function () {
+				var siteFacilitygroupId = $(this).attr('site_facilitygroup_id');
+				var bookingTime = $(this).attr('booking_time');
+				var duration = $('#overlayevent_duration').val();
+
+				$.mobile.loading('show');
+
+				$.ajax({
+					url: "/customer/mobile/facility/book_overlay_ajax",
+					type: "POST",
+					dataType: "json",
+					data: 'site_facilitygroup_id=' + siteFacilitygroupId + '&booking_time=' + bookingTime + '&event_duration=' + duration,
+					success: function (result) {
+						if (result.error === false) {
+							//$.mobile.navigate( '/customer/mobile/facility/confirm' );
+							window.location.href = '/customer/mobile/facility/confirm';
+						}
+						else {
+							var x;
+
+							var messages = '';
+
+							for (x in result.errors) {
+								messages += result.errors[x] + '<br />';
+							}
+
+							$("#error-message").html(messages);
+							$('#error-stack').show();
+						}
+
+						$.mobile.loading('hide');
+					},
+					error: function (jqXHR, textStatus, errorThrown) {
+						//alert('error');
+						$.mobile.loading('hide');
+					}
+				});
+			});
+
+			$('#book_now_coach').unbind('tap').tap(function () {
+				var siteMemberCoachId = $(this).attr('site_member_coach_id');
+				var bookingTime = $(this).attr('booking_time');
+				var duration = $('#event_duration').val();
+				var siteCoachroleId = $(this).attr('site_coachrole_id');
+
+				$.mobile.loading('show');
+
+				$.ajax({
+					url: "/customer/mobile/coach/book_ajax",
+					type: "POST",
+					dataType: "json",
+					data: 'site_member_coach_id=' + siteMemberCoachId + '&booking_time=' + bookingTime + '&event_duration=' + duration + '&site_coachrole_id=' + siteCoachroleId,
+					success: function (result) {
+						if (result.error === false) {
+							//$.mobile.navigate( '/customer/mobile/facility/confirm' );
+							window.location.href = '/customer/mobile/coach/confirm/' + siteCoachroleId;
+						}
+						else {
+							var x;
+
+							var messages = '';
+
+							for (x in result.errors) {
+								messages += result.errors[x] + '<br />';
+							}
+
+							$("#error-message").html(messages);
+							$('#error-stack').show();
+						}
+
+						$.mobile.loading('hide');
+					},
+					error: function (jqXHR, textStatus, errorThrown) {
+						//alert('error');
+						$.mobile.loading('hide');
+					}
+				});
+			});
+
+			$('#cancel_facility_booking').unbind('tap').tap(function (e) {
+
+				e.preventDefault();
+
+				var eventId = $(this).attr('event_id');
+
+				$.mobile.loading('show');
+
+				$.ajax({
+					url: "/customer/mobile/facility/cancel_ajax",
+					type: "POST",
+					dataType: "json",
+					data: 'site_event_id=' + eventId,
+					success: function (result) {
+						if (result.error === false) {
+							window.location.href = '/customer/mobile/dashboard/';
+						}
+						else {
+							var x;
+
+							var messages = '';
+
+							for (x in result.errors) {
+								messages += result.errors[x] + '<br />';
+							}
+
+							$("#error-message").html(messages);
+							$('#error-stack').show();
+						}
+
+						$.mobile.loading('hide');
+					},
+					error: function (jqXHR, textStatus, errorThrown) {
+						//alert('error');
+						$.mobile.loading('hide');
+					}
+				});
+			});
+
+			$('#cancel_session_booking').unbind('tap').tap(function (e) {
+
+				e.preventDefault();
+
+				var eventId = $(this).attr('event_id');
+
+				$.mobile.loading('show');
+
+				$.ajax({
+					url: "/customer/mobile/session/cancel_ajax",
+					type: "POST",
+					dataType: "json",
+					data: 'site_event_id=' + eventId,
+					success: function (result) {
+						if (result.error === false) {
+							window.location.href = '/customer/mobile/dashboard/';
+						}
+						else {
+							var x;
+
+							var messages = '';
+
+							for (x in result.errors) {
+								messages += result.errors[x] + '<br />';
+							}
+
+							$("#error-message").html(messages);
+							$('#error-stack').show();
+						}
+
+						$.mobile.loading('hide');
+					},
+					error: function (jqXHR, textStatus, errorThrown) {
+						$.mobile.loading('hide');
+					}
+				});
+			});
+		});        </script>
+
+	<script>
+		(function (i, s, o, g, r, a, m) {
+			i['GoogleAnalyticsObject'] = r;
+			i[r] = i[r] || function () {
+						(i[r].q = i[r].q || []).push(arguments)
+					}, i[r].l = 1 * new Date();
+			a = s.createElement(o),
+					m = s.getElementsByTagName(o)[0];
+			a.async = 1;
+			a.src = g;
+			m.parentNode.insertBefore(a, m)
+		})(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+		ga('create', 'UA-43057086-1', 'auto');
+		ga('send', 'pageview');
+
+	</script>
+
+</head>
+<body>
+
+<div data-role="page" id="d-index" data-dom-cache="true">
+	<div data-role="content">
+
+
+		<img src="/media/dynamic/configuration_images/1435887561_382.png"
+			 style="display:block; margin-left:auto; margin-right:auto; max-width:80%;"/>
+		<ul data-role="listview" data-inset="true">
+			<li data-role="list-divider">My Account</li>
+
+			<li><a href="/customer/mobile/account/balance" rel="external">Pay Outstanding Balance </a></li>
+		</ul>
+
+		<ul data-role="listview" data-inset="true">
+			<li data-role="list-divider">Online Bookings</li>
+			<li><a href="#facility-booking779">25m Pool - Lane Availability </a></li>
+			<li><a href="#facility-booking780">50m Pool Lane Availability</a></li>
+			<li><a href="#facility-booking754">Book Badminton</a></li>
+			<li><a href="#facility-booking753">Book Squash</a></li>
+			<li><a href="#session-booking-6">Competitions </a></li>
+			<li><a href="#session-booking-130">Express Workouts </a></li>
+			<li><a href="#session-booking-5">Group Fitness </a></li>
+			<li><a href="#session-booking-4">Small Group Training </a></li>
+		</ul>
+		<ul data-role="listview" data-inset="true">
+			<li data-role="list-divider">My Upcoming Bookings</li>
+			<li data-role="list-divider" data-theme="d">Sat 01 08</li>
+			<li><a href="/customer/mobile/facility/booking_dialog/197767" data-rel="dialog">10:00 am Squash Court 5</a>
+			</li>
+		</ul>
+	</div>
+	<!-- /content -->
+
+	<div data-role="footer" data-theme="b">
+		<div data-role="navbar">
+			<ul>
+				<li><a href="/customer/mobile/login/logout" data-ajax="false">Logout</a></li>
+				<li><a href="/customer/dashboard" rel="external">View Full Site</a></li>
+			</ul>
+		</div>
+		<!-- /navbar -->
+	</div>
+	<!-- /footer -->
+</div>
+
+<div data-role="page" id="session-booking-6" data-dom-cache="true">
+	<div data-role="header" data-theme="b"><a href="#d-index" data-icon="back">Back</a>
+
+		<h1>Book a Competitions Class</h1>
+	</div>
+	<div data-role="content">
+		<ul data-role="listview" data-inset="true" id="class-list">
+			<li><a href="/customer/mobile/session/browse/2015-07-30/6">Today </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-07-31/6">Tomorrow </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-01/6">Saturday 1st August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-02/6">Sunday 2nd August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-03/6">Monday 3rd August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-04/6">Tuesday 4th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-05/6">Wednesday 5th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-06/6">Thursday 6th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-07/6">Friday 7th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-08/6">Saturday 8th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-09/6">Sunday 9th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-10/6">Monday 10th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-11/6">Tuesday 11th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-12/6">Wednesday 12th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-13/6">Thursday 13th August </a></li>
+		</ul>
+	</div>
+</div>
+<div data-role="page" id="session-booking-130" data-dom-cache="true">
+	<div data-role="header" data-theme="b"><a href="#d-index" data-icon="back">Back</a>
+
+		<h1>Book a Express Workouts Class</h1>
+	</div>
+	<div data-role="content">
+		<ul data-role="listview" data-inset="true" id="class-list">
+			<li><a href="/customer/mobile/session/browse/2015-07-30/130">Today </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-07-31/130">Tomorrow </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-01/130">Saturday 1st August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-02/130">Sunday 2nd August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-03/130">Monday 3rd August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-04/130">Tuesday 4th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-05/130">Wednesday 5th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-06/130">Thursday 6th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-07/130">Friday 7th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-08/130">Saturday 8th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-09/130">Sunday 9th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-10/130">Monday 10th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-11/130">Tuesday 11th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-12/130">Wednesday 12th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-13/130">Thursday 13th August </a></li>
+		</ul>
+	</div>
+</div>
+<div data-role="page" id="session-booking-5" data-dom-cache="true">
+	<div data-role="header" data-theme="b"><a href="#d-index" data-icon="back">Back</a>
+
+		<h1>Book a Group Fitness Class</h1>
+	</div>
+	<div data-role="content">
+		<ul data-role="listview" data-inset="true" id="class-list">
+			<li><a href="/customer/mobile/session/browse/2015-07-30/5">Today </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-07-31/5">Tomorrow </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-01/5">Saturday 1st August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-02/5">Sunday 2nd August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-03/5">Monday 3rd August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-04/5">Tuesday 4th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-05/5">Wednesday 5th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-06/5">Thursday 6th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-07/5">Friday 7th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-08/5">Saturday 8th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-09/5">Sunday 9th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-10/5">Monday 10th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-11/5">Tuesday 11th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-12/5">Wednesday 12th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-13/5">Thursday 13th August </a></li>
+		</ul>
+	</div>
+</div>
+<div data-role="page" id="session-booking-4" data-dom-cache="true">
+	<div data-role="header" data-theme="b"><a href="#d-index" data-icon="back">Back</a>
+
+		<h1>Book a Small Group Training Class</h1>
+	</div>
+	<div data-role="content">
+		<ul data-role="listview" data-inset="true" id="class-list">
+			<li><a href="/customer/mobile/session/browse/2015-07-30/4">Today </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-07-31/4">Tomorrow </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-01/4">Saturday 1st August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-02/4">Sunday 2nd August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-03/4">Monday 3rd August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-04/4">Tuesday 4th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-05/4">Wednesday 5th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-06/4">Thursday 6th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-07/4">Friday 7th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-08/4">Saturday 8th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-09/4">Sunday 9th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-10/4">Monday 10th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-11/4">Tuesday 11th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-12/4">Wednesday 12th August </a></li>
+			<li><a href="/customer/mobile/session/browse/2015-08-13/4">Thursday 13th August </a></li>
+		</ul>
+	</div>
+</div>
+
+<div data-role="page" id="facility-booking779" data-dom-cache="true">
+	<div data-role="header" data-theme="b"><a href="#d-index" data-icon="back">Back</a>
+
+		<h1>25m Pool - Lane Availability </h1>
+	</div>
+	<div data-role="content">
+		<ul data-role="listview" data-inset="true">
+			<li><a href="/customer/mobile/facility/browse/779/2015-07-30">Today </a></li>
+			<li><a href="/customer/mobile/facility/browse/779/2015-07-31">Tomorrow </a></li>
+			<li><a href="/customer/mobile/facility/browse/779/2015-08-01">Saturday 1st August </a></li>
+			<li><a href="/customer/mobile/facility/browse/779/2015-08-02">Sunday 2nd August </a></li>
+			<li><a href="/customer/mobile/facility/browse/779/2015-08-03">Monday 3rd August </a></li>
+			<li><a href="/customer/mobile/facility/browse/779/2015-08-04">Tuesday 4th August </a></li>
+			<li><a href="/customer/mobile/facility/browse/779/2015-08-05">Wednesday 5th August </a></li>
+			<li><a href="/customer/mobile/facility/browse/779/2015-08-06">Thursday 6th August </a></li>
+		</ul>
+	</div>
+</div>
+<div data-role="page" id="facility-booking780" data-dom-cache="true">
+	<div data-role="header" data-theme="b"><a href="#d-index" data-icon="back">Back</a>
+
+		<h1>50m Pool Lane Availability</h1>
+	</div>
+	<div data-role="content">
+		<ul data-role="listview" data-inset="true">
+			<li><a href="/customer/mobile/facility/browse/780/2015-07-30">Today </a></li>
+			<li><a href="/customer/mobile/facility/browse/780/2015-07-31">Tomorrow </a></li>
+			<li><a href="/customer/mobile/facility/browse/780/2015-08-01">Saturday 1st August </a></li>
+			<li><a href="/customer/mobile/facility/browse/780/2015-08-02">Sunday 2nd August </a></li>
+			<li><a href="/customer/mobile/facility/browse/780/2015-08-03">Monday 3rd August </a></li>
+			<li><a href="/customer/mobile/facility/browse/780/2015-08-04">Tuesday 4th August </a></li>
+			<li><a href="/customer/mobile/facility/browse/780/2015-08-05">Wednesday 5th August </a></li>
+			<li><a href="/customer/mobile/facility/browse/780/2015-08-06">Thursday 6th August </a></li>
+			<li><a href="/customer/mobile/facility/browse/780/2015-08-07">Friday 7th August </a></li>
+			<li><a href="/customer/mobile/facility/browse/780/2015-08-08">Saturday 8th August </a></li>
+			<li><a href="/customer/mobile/facility/browse/780/2015-08-09">Sunday 9th August </a></li>
+			<li><a href="/customer/mobile/facility/browse/780/2015-08-10">Monday 10th August </a></li>
+			<li><a href="/customer/mobile/facility/browse/780/2015-08-11">Tuesday 11th August </a></li>
+			<li><a href="/customer/mobile/facility/browse/780/2015-08-12">Wednesday 12th August </a></li>
+			<li><a href="/customer/mobile/facility/browse/780/2015-08-13">Thursday 13th August </a></li>
+		</ul>
+	</div>
+</div>
+<div data-role="page" id="facility-booking754" data-dom-cache="true">
+	<div data-role="header" data-theme="b"><a href="#d-index" data-icon="back">Back</a>
+
+		<h1>Book Badminton</h1>
+	</div>
+	<div data-role="content">
+		<ul data-role="listview" data-inset="true">
+			<li><a href="/customer/mobile/facility/browse/754/2015-07-30">Today </a></li>
+			<li><a href="/customer/mobile/facility/browse/754/2015-07-31">Tomorrow </a></li>
+			<li><a href="/customer/mobile/facility/browse/754/2015-08-01">Saturday 1st August </a></li>
+		</ul>
+	</div>
+</div>
+<div data-role="page" id="facility-booking753" data-dom-cache="true">
+	<div data-role="header" data-theme="b"><a href="#d-index" data-icon="back">Back</a>
+
+		<h1>Book Squash</h1>
+	</div>
+	<div data-role="content">
+		<ul data-role="listview" data-inset="true">
+			<li><a href="/customer/mobile/facility/browse/753/2015-07-30">Today </a></li>
+			<li><a href="/customer/mobile/facility/browse/753/2015-07-31">Tomorrow </a></li>
+			<li><a href="/customer/mobile/facility/browse/753/2015-08-01">Saturday 1st August </a></li>
+		</ul>
+	</div>
+</div>
+</body>
+</html>

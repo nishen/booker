@@ -60,7 +60,7 @@ class SiteTest extends PHPUnit_Framework_TestCase
 		sleep(2);
 
 		$numSlots = 4;
-		$time = '2015-07-29 05:00pm';
+		$time = '2015-08-01 10:00am';
 		//$time = NULL;
 		$facility = '753';
 		self::$log->debug("getting availability");

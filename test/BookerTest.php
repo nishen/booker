@@ -9,13 +9,20 @@
 
 require_once __DIR__ . '/../app/config.php';
 
+use Analog\Logger;
 use Nishen\Booker;
 use PHPUnit_Framework_TestCase;
 
 class BookerTest extends PHPUnit_Framework_TestCase
 {
+	/**
+	 * @var Logger
+	 */
 	private static $log;
 
+	/**
+	 * @var Booker
+	 */
 	private static $booker;
 
 	private static $page;
@@ -59,7 +66,7 @@ class BookerTest extends PHPUnit_Framework_TestCase
 	{
 		self::$log->debug("test: " . __METHOD__);
 
-		$time = '2015-07-03 05:00pm';
+		$time = '2015-08-01 02:00pm';
 		$page = self::$page;
 		$data = self::$booker->extractAvailabilityData($page);
 		$slots = self::$booker->findSlots($data, $time, 4);
@@ -81,7 +88,39 @@ class BookerTest extends PHPUnit_Framework_TestCase
 		self::$log->debug("test: " . __METHOD__);
 
 		$data = self::$booker->extractAvailabilityData(self::$page);
-		$slots = self::$booker->findSlots($data, '2015-07-04 05:00pm', 4);
+		$slots = self::$booker->findSlots($data, '2015-08-01 06:00pm', 4);
 		$this->assertEquals(0, count($slots), 'found results incorrectly.');
+	}
+
+	public function testCheckBookingValid()
+	{
+		$page = file_get_contents('data/dashboard-sample.html');
+		$slot = [
+			"date" => "2015-08-01",
+			"court" => 4595,
+			"timeu" => 1438401600,
+			"times" => "10:00am",
+			"slots" => 4
+		];
+
+		$result = self::$booker->checkBooking($page, $slot);
+		self::$log->debug("result: {$result}");
+		$this->assertTrue($result, "booking not found");
+	}
+
+	public function testCheckBookingInvalid()
+	{
+		$page = file_get_contents('data/dashboard-sample.html');
+		$slot = [
+			"date" => "2015-08-01",
+			"court" => 4594,
+			"timeu" => 1438401600,
+			"times" => "10:00am",
+			"slots" => 4
+		];
+
+		$result = self::$booker->checkBooking($page, $slot);
+		self::$log->debug("result: {$result}");
+		$this->assertFalse($result, "booking not found");
 	}
 }

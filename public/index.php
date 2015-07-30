@@ -42,6 +42,17 @@ $app->get('/', function (Request $req, Response $res)
 
 
 /***********************************************************
+ * Book API
+ ***********************************************************/
+
+$app->get('/book/{facility}/{time}/{numSlots}', function (Request $req, Response $res, $args) use ($h)
+{
+	return $h->makeBooking($res, $args);
+});
+
+
+
+/***********************************************************
  * User API
  ***********************************************************/
 

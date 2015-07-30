@@ -224,6 +224,22 @@ class Booker
 		return $result;
 	}
 
+	public function selectSlot($slots, $order)
+	{
+		foreach ($order as $o)
+		{
+			foreach ($slots as $s)
+			{
+				if ($o == $this->courtMap[$s['court']])
+				{
+					return $s;
+				}
+			}
+		}
+
+		return null;
+	}
+
 	public function bookingDialog($facility, $resource, $time)
 	{
 		$date = new DateTime('@' . $time, new DateTimeZone("Australia/NSW"));
@@ -281,7 +297,7 @@ class Booker
 			]
 		]);
 
-		self::$log->debug("headers: {$referer}");
+		self::$log->debug("fn:book headers: {$referer}");
 
 		return strval($res->getBody());
 	}
@@ -292,10 +308,10 @@ class Booker
 
 		// https://secure.activecarrot.com/customer/mobile/facility/book_dialog/1437375600/4591
 		$endpoint = "facility/confirm";
-		self::$log->debug("endpoint: {$endpoint}");
+		self::$log->debug("fn:getConfirmation endpoint: {$endpoint}");
 
 		$referer = $this->client->getConfig('base_uri') . "facility/browse/{$facility}/{$date->format('Y-m-d')}";
-		self::$log->debug("referer: {$referer}");
+		self::$log->debug("fn:getConfirmation referer: {$referer}");
 
 		$result = $this->client->get($endpoint, [
 			'headers' => [
@@ -312,10 +328,10 @@ class Booker
 	public function confirm($resource)
 	{
 		$endpoint = "facility/confirm";
-		self::$log->debug("endpoint: {$endpoint}");
+		self::$log->debug("fn:confirm endpoint: {$endpoint}");
 
 		$referer = "facility/confirm";
-		self::$log->debug("referer: {$referer}");
+		self::$log->debug("fn:confirm referer: {$referer}");
 
 		$res = $this->client->post($endpoint, [
 			'form_params' => [
@@ -332,24 +348,104 @@ class Booker
 			]
 		]);
 
-		self::$log->debug("headers: {$referer}");
+		self::$log->debug("fn:confirm headers: {$referer}");
 
 		return strval($res->getBody());
 	}
 
-	public function selectSlot($slots, $order)
+	public function checkBooking($page, $slot)
 	{
-		foreach ($order as $o)
+		$dt = new DateTime("{$slot['date']} {$slot['times']}", new DateTimeZone("Australia/NSW"));
+		$regexDate = $dt->format('D d m');
+
+		// '10:00 am  Squash Court 5';
+		$regexTime = $dt->format('h:i a');
+		$regexCourt = $this->courtMap[$slot['court']];
+
+		$regex = "|";
+		$regex .= "<li.*My Upcoming Bookings</li>\s+";
+		$regex .= "<li.*>{$regexDate}</li>\s+";
+		$regex .= "<li><a.*>{$regexTime}  Squash Court {$regexCourt}</a></li>";
+		$regex .= "|ms";
+
+		self::$log->debug("checkBooking regex:\n" . $regex);
+
+		return preg_match($regex, $page) == 1;
+	}
+
+	public function bookResource($facility, $time, $numSlots)
+	{
+		//$numSlots = 4;
+		//$time = '2015-08-01 10:00am';
+		//$time = NULL;
+		//$facility = '753';
+		self::$log->info("getting login page");
+		$this->getLoginPage();
+
+		self::$log->info("sleeping...");
+		sleep(2);
+
+		self::$log->info("logging in");
+		$location = $this->login();
+
+		self::$log->info("sleeping...");
+		sleep(2);
+
+		if ($location == null)
+			throw new Exception("failed to login - exiting", 401);
+
+		try
 		{
-			foreach ($slots as $s)
+			self::$log->info("getting dashboard");
+			$this->dashboard();
+
+			self::$log->info("getting availability");
+			$page = $this->getFacilityAvailability($time, $facility);
+			$data = $this->extractAvailabilityData($page);
+
+			self::$log->info("finding slot");
+			$slots = $this->findSlots($data, $time, $numSlots);
+			if ($slots == null)
+				throw new Exception("{$numSlots} slots not available for {$time}", 404);
+
+			$s = $this->selectSlot($slots, [6, 5, 4, 3, 2, 1]);
+			self::$log->info("found slot: {$s['court']}, time: {$s['timeu']}, slots: {$s['slots']}");
+
+			self::$log->info("handling booking dialog");
+			$this->bookingDialog($facility, $s['court'], $s['timeu']);
+
+			self::$log->info("making booking");
+			$this->book($facility, $s['court'], $s['timeu'], $s['slots']);
+
+			self::$log->info("sleeping...");
+			sleep(3);
+
+			self::$log->info("handling confirmation");
+			$this->getConfirmation($facility, $s['timeu']);
+
+			self::$log->info("confirming booking");
+			$res = $this->confirm($facility);
+
+			self::$log->info("checking booking succeeded");
+			$booked = $this->checkBooking($res, $s);
+
+			if ($booked)
 			{
-				if ($o == $this->courtMap[$s['court']])
-				{
-					return $s;
-				}
+				// change status in db
+				// email verification
 			}
 		}
-
-		return null;
+		catch (Exception $e)
+		{
+			self::$log->error("[{$e->getCode()}]: {$e->getMessage()}");
+			throw $e;
+		}
+		finally
+		{
+			self::$log->info("sleeping...");
+			sleep(3);
+			self::$log->info("logging out");
+			$this->logout();
+		}
 	}
 }

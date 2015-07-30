@@ -16,27 +16,39 @@ use Analog\Analog;
 use Analog\Handler\File;
 use Analog\Handler\Multi;
 use Analog\Handler\Stderr;
+use Analog\Handler\Threshold;
 use Analog\Logger;
+
+/*
+ * ==========================================================================
+ *  PHP Config
+ * ==========================================================================
+ */
+ini_set('max_execution_time', 180);
+
 
 /*
  * ==========================================================================
  *  Logging Config
  * ==========================================================================
  */
-Analog::$default_level = Analog::DEBUG;
+Analog::$default_level = Analog::INFO;
 
 $logFile = 'D:/Temp/php.log';
 $log = new Logger;
 $log->handler(
-	Multi::init([
-		Analog::DEBUG => [
-			Stderr::init(),
-			File::init($logFile)
-		],
-		Analog::INFO => [
-			File::init($logFile)
-		]
-	])
+	Threshold::init(
+		Multi::init([
+			Analog::DEBUG => [
+				Stderr::init(),
+				File::init($logFile)
+			],
+			Analog::INFO => [
+				File::init($logFile)
+			]
+		]),
+		Analog::INFO
+	)
 );
 
 /*

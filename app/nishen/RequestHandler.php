@@ -9,6 +9,8 @@
 
 
 use Analog\Logger;
+use DateTime;
+use Exception;
 use Model\Booking;
 use Model\BookingQuery;
 use Model\User;
@@ -25,6 +27,65 @@ class RequestHandler
 	public function __construct(Logger $log)
 	{
 		$this->log = $log;
+	}
+
+	public function makeBooking(Response $res, $args)
+	{
+		$this->log->debug(print_r($args, true));
+
+		// check facility
+		$facility = $args['facility'];
+		if (!in_array($facility, [753]))
+		{
+			$err = [
+				"code" => 400,
+				"message" => "facility does not exist: {facility}",
+			];
+
+			return H::json($res, json_encode($err), 404);
+		}
+
+		// check time
+		$time = $args['time'];
+		$reqTime = new DateTime($time);
+		if ($time != $reqTime->format('Y-m-d h:ia'))
+		{
+			$err = [
+				"code" => 400,
+				"message" => "incorrect date format: {$time}/" . $reqTime->format('Y-m-d h:ia'),
+			];
+
+			return H::json($res, json_encode($err), 400);
+		}
+
+		// check slots (2 to 4)
+		$numSlots = $args['numSlots'];
+		if ($numSlots < 2 || $numSlots > 4)
+		{
+			$err = [
+				"code" => 400,
+				"message" => "only support 2 to 4 slots: {$numSlots}",
+			];
+
+			return H::json($res, json_encode($err), 400);
+		}
+
+		try
+		{
+			$booker = new Booker('nishen.naidoo@mq.edu.au', 'nishen');
+			$booker->bookResource($facility, $time, $numSlots);
+		}
+		catch (Exception $e)
+		{
+			$err = [
+				"code" => $e->getCode(),
+				"message" => $e->getMessage(),
+			];
+
+			return H::json($res, json_encode($err), $e->getCode());
+		}
+
+		return H::json($res, json_encode($args));
 	}
 
 	public function getUsers(Response $res)
