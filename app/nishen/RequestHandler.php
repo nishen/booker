@@ -29,6 +29,11 @@ class RequestHandler
 		$this->log = $log;
 	}
 
+	public function processBookings(Response $res)
+	{
+		return $res;
+	}
+
 	public function makeBooking(Response $res, $args)
 	{
 		$this->log->debug(print_r($args, true));
