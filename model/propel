@@ -1,0 +1,3 @@
+#!/bin/bash
+
+$PHPBIN ../vendor/propel/propel/bin/propel $*
