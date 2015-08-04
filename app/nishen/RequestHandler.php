@@ -31,7 +31,7 @@ class RequestHandler
 
 	public function processBookings(Response $res)
 	{
-		return $res;
+		return H::json($res, null, 418);
 	}
 
 	public function makeBooking(Response $res, $args)
