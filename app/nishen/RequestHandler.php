@@ -10,6 +10,7 @@
 
 use Analog\Logger;
 use DateTime;
+use DateTimeZone;
 use Exception;
 use Model\Booking;
 use Model\BookingQuery;
@@ -52,7 +53,7 @@ class RequestHandler
 
 		// check time
 		$time = $args['time'];
-		$reqTime = new DateTime($time);
+		$reqTime = new DateTime($time, new DateTimeZone("Australia/NSW"));
 		if ($time != $reqTime->format('Y-m-d h:ia'))
 		{
 			$err = [
@@ -116,7 +117,7 @@ class RequestHandler
 		}
 
 		return H::json($res, $user->toJSON(), 201)
-				->withAddedHeader('Location', $req->getUri() . "/" . $user->getId());
+			->withAddedHeader('Location', $req->getUri() . "/" . $user->getId());
 	}
 
 	public function getUser(Response $res, $args)
@@ -192,7 +193,7 @@ class RequestHandler
 		}
 
 		return H::json($res, $booking->toJSON(), 201)
-				->withAddedHeader('Location', $req->getUri() . "/" . $booking->getId());
+			->withAddedHeader('Location', $req->getUri() . "/" . $booking->getId());
 	}
 
 	public function getBooking(Response $res, $args)

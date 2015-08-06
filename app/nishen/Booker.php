@@ -129,22 +129,22 @@ class Booker
 	{
 		$result = null;
 
-		$date = $time == null ? new DateTime() : new DateTime($time);
-		if ($time == null)
+		if ($time == null) $time = "now";
+
+		$date = new DateTime($time, new DateTimeZone("Australia/NSW"));
+		if ($time == "now")
 		{
 			$date->modify('+2 days');
 			if ($date->format('N') > 5)
 			{
 				$date->setTime(10, 0, 0);
-			}
-			else
+			} else
 			{
 				$date->setTime(17, 0, 0);
 			}
-		}
-		else
+		} else
 		{
-			$tmp = new DateTime();
+			$tmp = new DateTime("now", new DateTimeZone("Australia/NSW"));
 			$tmp->modify('+3 days');
 			$tmp->setTime(0, 0, 0);
 
