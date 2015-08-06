@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false" />
+  <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
+    <file url="file://$PROJECT_DIR$/.gitignore" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/config.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/nishen/Booker.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/nishen/RequestHandler.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/nishen/RequestHelper.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/composer.json" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/composer.lock" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/public/booker/v1/.htaccess" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/public/booker/v1/index.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/test/BookerTest.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/test/RequestHandlerUserTest.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/test/SiteTest.php" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/test/data/availability-sample.html" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/test/data/dashboard-sample.html" charset="UTF-8" />
+  </component>
 </project>

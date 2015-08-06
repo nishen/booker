@@ -32,23 +32,21 @@ ini_set('max_execution_time', 180);
  *  Logging Config
  * ==========================================================================
  */
-Analog::$default_level = Analog::INFO;
-
-$logFile = 'D:/Temp/php.log';
+$logFile = __DIR__ . '/../log/php.log';
 $log = new Logger;
 $log->handler(
-	Threshold::init(
-		Multi::init([
-			Analog::DEBUG => [
-				Stderr::init(),
-				File::init($logFile)
-			],
-			Analog::INFO => [
-				File::init($logFile)
-			]
-		]),
-		Analog::INFO
-	)
+    Threshold::init(
+        Multi::init([
+            Analog::DEBUG => [
+                Stderr::init(),
+                File::init($logFile)
+            ],
+            Analog::INFO => [
+                File::init($logFile)
+            ]
+        ]),
+        Analog::DEBUG
+    )
 );
 
 /*
