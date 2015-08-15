@@ -5,7 +5,7 @@
       <paths name="nishen.net">
         <serverdata>
           <mappings>
-            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/home/nishen/subdomains/api" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>

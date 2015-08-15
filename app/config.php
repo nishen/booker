@@ -24,7 +24,7 @@ use Analog\Logger;
  *  PHP Config
  * ==========================================================================
  */
-ini_set('max_execution_time', 180);
+ini_set('max_execution_time', 300);
 
 
 /*
@@ -35,18 +35,18 @@ ini_set('max_execution_time', 180);
 $logFile = __DIR__ . '/../log/php.log';
 $log = new Logger;
 $log->handler(
-    Threshold::init(
-        Multi::init([
-            Analog::DEBUG => [
-                Stderr::init(),
-                File::init($logFile)
-            ],
-            Analog::INFO => [
-                File::init($logFile)
-            ]
-        ]),
-        Analog::DEBUG
-    )
+	Threshold::init(
+		Multi::init([
+			Analog::DEBUG => [
+				Stderr::init(),
+				File::init($logFile)
+			],
+			Analog::INFO => [
+				File::init($logFile)
+			]
+		]),
+		Analog::DEBUG
+	)
 );
 
 /*

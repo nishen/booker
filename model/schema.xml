@@ -3,8 +3,8 @@
 	<table name="booking" idMethod="native" phpName="Booking">
 		<column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
 		<column name="user_id" phpName="UserId" type="INTEGER"/>
-		<column name="time" phpName="Time" type="TIMESTAMP" required="true"/>
-		<column name="court" phpName="Court" type="VARCHAR" size="10" required="true"/>
+		<column name="day" phpName="Day" type="VARCHAR" required="true"/>
+		<column name="time" phpName="Time" type="VARCHAR" required="true"/>
 		<column name="status" phpName="Status" type="VARCHAR" size="10" required="true"/>
 		<column name="created" phpName="Created" type="TIMESTAMP" required="true" defaultValue="0000-00-00 00:00:00"/>
 		<column name="updated" phpName="Updated" type="TIMESTAMP" required="true" defaultExpr="CURRENT_TIMESTAMP"/>
@@ -28,17 +28,6 @@
 					 onDelete="restrict" onUpdate="cascade" skipSql="false" defaultJoin="Criteria::INNER_JOIN">
 			<reference local="user_id" foreign="id"/>
 		</foreign-key>
-		<vendor type="mysql">
-			<parameter name="Engine" value="InnoDB"/>
-			<parameter name="Charset" value="utf8"/>
-		</vendor>
-	</table>
-	<table name="resource" idMethod="native" phpName="Resource">
-		<column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
-		<column name="name" phpName="Name" type="VARCHAR" size="50" required="true"/>
-		<column name="value" phpName="Value" type="VARCHAR" size="50" required="true"/>
-		<column name="created" phpName="Created" type="TIMESTAMP" required="true" defaultValue="0000-00-00 00:00:00"/>
-		<column name="updated" phpName="Updated" type="TIMESTAMP" required="true" defaultExpr="CURRENT_TIMESTAMP"/>
 		<vendor type="mysql">
 			<parameter name="Engine" value="InnoDB"/>
 			<parameter name="Charset" value="utf8"/>
