@@ -40,12 +40,12 @@ class RequestHandler
 
 		$day = $date->format('D');
 
-		$booking = BookingQuery::create()
-		                       ->filterByStatus(['active', 'failed'])
-		                       ->filterByDay($day)
-		                       ->findOne();
+		$bookings = BookingQuery::create()
+		                        ->filterByStatus(['active', 'failed'])
+		                        ->filterByDay($day)
+		                        ->find();
 
-		if ($booking == null)
+		if ($bookings == null)
 		{
 			$msg = [
 				"code" => 200,
@@ -55,53 +55,61 @@ class RequestHandler
 			return H::json($res, json_encode($msg), 200);
 		}
 
-		$updated = $booking->getUpdated();
-		$status = $booking->getStatus();
-		if ($updated > $today && $status == 'active')
+		$results = [];
+		foreach ($bookings as $booking)
 		{
-			$msg = [
-				"code" => 200,
-				"message" => "already processed"
-			];
+			$updated = $booking->getUpdated();
+			$status = $booking->getStatus();
+			if ($updated > $today && $status == 'active')
+			{
+				$msg = [
+					"code" => 200,
+					"message" => "already processed"
+				];
 
-			return H::json($res, json_encode($msg), 200);
-		}
+				return H::json($res, json_encode($msg), 200);
+			}
 
-		$user = $booking->getUser();
-		$time = $date->format("Y-m-d") . " " . $booking->getTime();
-		$this->log->info("time: {$time}");
+			$user = $booking->getUser();
+			$time = $date->format("Y-m-d") . " " . $booking->getTime();
+			$this->log->info("time: {$time}");
 
-		$result = [];
-		try
-		{
-			$booker = new Booker($user->getEmail(), $user->getPassword());
-			$booker->bookResource(753, $time, 4);
+			$result = [];
+			try
+			{
+				$booker = new Booker($user->getEmail(), $user->getPassword());
+				$booker->bookResource(753, $time, 4);
 
-			$booking->setStatus('active');
+				$booking->setStatus('active');
 
-			/** @noinspection PhpUndefinedMethodInspection */
-			$result = [
-				"code" => 200,
-				"message" => $booking->toJSON()
-			];
+				/** @noinspection PhpUndefinedMethodInspection */
+				$result = [
+					"code" => 200,
+					"message" => $booking->toJSON()
+				];
 
-		}
-		catch (Exception $e)
-		{
-			$result = [
-				"code" => in_array($e->getCode(), RequestHelper::$messages) ? $e->getCode() : 400,
-				"message" => $e->getMessage()
-			];
+				$booking->setUpdated(new DateTime());
+			}
+			catch (Exception $e)
+			{
+				$result = [
+					"code" => in_array($e->getCode(), RequestHelper::$messages) ? $e->getCode() : 400,
+					"message" => $e->getMessage()
+				];
 
-			$booking->setStatus('failed');
-		}
-		finally
-		{
-			$booking->save();
+				$booking->setStatus('failed');
+			}
+			finally
+			{
+				$booking->setUpdated(new DateTime());
+				$booking->save();
+			}
+
+			$results[] = $result;
 		}
 
 		/** @noinspection PhpUndefinedMethodInspection */
-		return H::json($res, json_encode($result), $result{'code'});
+		return H::json($res, json_encode($results));
 	}
 
 	public function makeBooking(Response $res, $args)
