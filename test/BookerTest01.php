@@ -13,7 +13,7 @@ use Analog\Logger;
 use Nishen\Booker;
 use PHPUnit_Framework_TestCase;
 
-class BookerTest extends PHPUnit_Framework_TestCase
+class BookerTest01 extends PHPUnit_Framework_TestCase
 {
 	/**
 	 * @var Logger
@@ -94,7 +94,7 @@ class BookerTest extends PHPUnit_Framework_TestCase
 
 	public function testCheckBookingValid()
 	{
-		$page = file_get_contents('data/dashboard-sample.html');
+		$page = file_get_contents('data/dashboard-sample01.html');
 		$slot = [
 			"date" => "2015-08-01",
 			"court" => 4595,
@@ -110,7 +110,7 @@ class BookerTest extends PHPUnit_Framework_TestCase
 
 	public function testCheckBookingInvalid()
 	{
-		$page = file_get_contents('data/dashboard-sample.html');
+		$page = file_get_contents('data/dashboard-sample01.html');
 		$slot = [
 			"date" => "2015-08-01",
 			"court" => 4594,

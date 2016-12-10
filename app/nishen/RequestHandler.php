@@ -101,7 +101,7 @@ class RequestHandler
 			}
 			finally
 			{
-				$booking->setUpdated(new DateTime());
+				$booking->setUpdated(new DateTime("now", new DateTimeZone("Australia/NSW")));
 				$booking->save();
 			}
 

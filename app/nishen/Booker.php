@@ -364,14 +364,15 @@ class Booker
 		$dt = new DateTime("{$slot['date']} {$slot['times']}", new DateTimeZone("Australia/NSW"));
 		$regexDate = $dt->format('D d m');
 
-		// '10:00 am  Squash Court 5';
+		// '10:00 am Squash Court 5';
 		$regexTime = $dt->format('h:i a');
 		$regexCourt = $this->courtMap[$slot['court']];
 
 		$regex = "|";
-		$regex .= "<li.*My Upcoming Bookings</li>\s+";
+		$regex .= "<li.*>My Upcoming Bookings</li>\s+";
 		$regex .= "<li.*>{$regexDate}</li>\s+";
-		$regex .= "<li><a.*>{$regexTime}  Squash Court {$regexCourt}</a></li>";
+		$regex .= "<li><a.*>{$regexTime}  Squash Court {$regexCourt}</a>\s*";
+		$regex .= "</li>";
 		$regex .= "|ms";
 
 		self::$log->debug("checkBooking regex:\n" . $regex);
@@ -439,6 +440,7 @@ class Booker
 			{
 				// change status in db
 				// email verification
+				// TODO
 			}
 		}
 		catch (Exception $e)
