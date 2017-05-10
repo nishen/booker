@@ -399,6 +399,7 @@ class Booker
 			throw new Exception("failed to login - exiting", 401);
 		}
 
+		$resource = null;
 		try
 		{
 			self::$log->info("getting dashboard");
@@ -437,11 +438,7 @@ class Booker
 			$booked = $this->checkBooking($res, $s);
 
 			if ($booked)
-			{
-				// change status in db
-				// email verification
-				// TODO
-			}
+				$resource = $s;
 		}
 		catch (Exception $e)
 		{
@@ -455,5 +452,7 @@ class Booker
 			self::$log->info("logging out");
 			$this->logout();
 		}
+
+		return $resource;
 	}
 }
