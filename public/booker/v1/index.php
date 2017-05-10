@@ -6,7 +6,7 @@
  * Time: 7:00 PM
  */
 
-require_once __DIR__ . '/../../../app/config.php';
+require_once __DIR__ . '../../../app/config.php';
 
 /*
 Activities:

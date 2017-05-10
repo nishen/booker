@@ -6,11 +6,11 @@
  * Time: 11:25 PM
  */
 
-require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/model/config.php';
-require_once __DIR__ . '/nishen/Booker.php';
-require_once __DIR__ . '/nishen/RequestHandler.php';
-require_once __DIR__ . '/nishen/RequestHelper.php';
+require_once __DIR__ . '../vendor/autoload.php';
+require_once __DIR__ . 'model/config.php';
+require_once __DIR__ . 'nishen/Booker.php';
+require_once __DIR__ . 'nishen/RequestHandler.php';
+require_once __DIR__ . 'nishen/RequestHelper.php';
 
 use Analog\Analog;
 use Analog\Handler\File;
@@ -32,7 +32,7 @@ ini_set('max_execution_time', 300);
  *  Logging Config
  * ==========================================================================
  */
-$logFile = __DIR__ . '/../log/php.log';
+$logFile = __DIR__ . '../log/php.log';
 $log = new Logger;
 $log->handler(
 	Threshold::init(
