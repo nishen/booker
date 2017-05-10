@@ -78,14 +78,15 @@ class RequestHandler
 			try
 			{
 				$booker = new Booker($user->getEmail(), $user->getPassword());
-				$booker->bookResource(753, $time, 4);
+				$resource = $booker->bookResource(753, $time, 4);
 
 				$booking->setStatus('active');
 
 				/** @noinspection PhpUndefinedMethodInspection */
 				$result = [
 					"code" => 200,
-					"message" => $booking->toJSON()
+					"message" => $booking->toJSON(),
+					"resource" => json_encode($resource)
 				];
 
 				$booking->setUpdated(new DateTime());
