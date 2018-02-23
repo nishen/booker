@@ -102,8 +102,10 @@ class RequestHandler
 			}
 			finally
 			{
+				global $manager;
+				$con = $manager->getWriteConnection();
 				$booking->setUpdated(new DateTime("now", new DateTimeZone("Australia/NSW")));
-				$booking->save();
+				$booking->save($con);
 			}
 
 			$results[] = $result;
