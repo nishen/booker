@@ -300,7 +300,8 @@ class Booker
 				'Origin' => 'https://secure.activecarrot.com',
 				'Referer' => $referer,
 				'X-Requested-With' => 'XMLHttpRequest'
-			]
+			],
+			'timeout' => 0
 		]);
 
 		self::$log->debug("fn:book headers: {$referer}");
