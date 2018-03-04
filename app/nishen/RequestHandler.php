@@ -102,10 +102,12 @@ class RequestHandler
 			}
 			finally
 			{
+				// get propel to refresh the connection.
 				global $manager;
-				$con = $manager->getWriteConnection();
+				$manager->closeConnections();
+
 				$booking->setUpdated(new DateTime("now", new DateTimeZone("Australia/NSW")));
-				$booking->save($con);
+				$booking->save();
 			}
 
 			$results[] = $result;
