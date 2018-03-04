@@ -417,7 +417,7 @@ class Booker
 				throw new Exception("{$numSlots} slots not available for {$time}", 404);
 			}
 
-			$s = $this->selectSlot($slots, [5, 6, 1, 2, 3, 4]);
+			$s = $this->selectSlot($slots, [4, 3, 2, 1, 5, 6]);
 			self::$log->info("found slot: {$s['court']}, time: {$s['timeu']}, slots: {$s['slots']}");
 
 			self::$log->info("handling booking dialog");
