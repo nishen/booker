@@ -1,4 +1,5 @@
 .idea/
 vendor/
 app/model/Model/
+app/model/config.php
 log/
